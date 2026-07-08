@@ -1,0 +1,70 @@
+/** Tipos espejo de los esquemas del backend (lscrib-api, doc 05/07/08). */
+
+export type JobStatus =
+  | 'uploaded'
+  | 'queued'
+  | 'normalizing'
+  | 'transcribing'
+  | 'completed'
+  | 'failed'
+  | 'canceled'
+
+export type MediaType = 'audio' | 'video'
+
+export interface Word {
+  w: string
+  start_ms: number
+  end_ms: number
+}
+
+export interface Segment {
+  index: number
+  start_ms: number
+  end_ms: number
+  text: string
+  words: Word[] | null
+}
+
+export interface Job {
+  id: string
+  original_filename: string
+  media_type: MediaType
+  duration_sec: number | null
+  language: string | null
+  model: string
+  status: JobStatus
+  progress: number
+  error: string | null
+}
+
+export interface JobDetail extends Job {
+  segments: Segment[]
+}
+
+export interface ModelStatus {
+  name: string
+  size_label: string
+  speed: string
+  quality: string
+  note: string
+  downloaded: boolean
+}
+
+export interface ModelsResponse {
+  default: string
+  models: ModelStatus[]
+}
+
+/** Evento SSE emitido por el worker (worker/events.py). */
+export interface JobEvent {
+  status: JobStatus
+  progress: number
+  language: string | null
+  error: string | null
+}
+
+export const TERMINAL_STATES: JobStatus[] = ['completed', 'failed', 'canceled']
+
+export function isTerminal(status: JobStatus): boolean {
+  return TERMINAL_STATES.includes(status)
+}

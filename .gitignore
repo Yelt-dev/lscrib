@@ -1,0 +1,30 @@
+# === Python / uv (backend) ===
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# === Datos en runtime (local-first: NUNCA versionar medios ni la BD) ===
+data/
+*.db
+*.sqlite
+*.sqlite3
+
+# === Node / Vite (frontend) ===
+node_modules/
+dist/
+*.local
+
+# === Entorno / secretos ===
+.env
+.env.*
+!.env.example
+
+# === OS / editores ===
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/
+*.swp

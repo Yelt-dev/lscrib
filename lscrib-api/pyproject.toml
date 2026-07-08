@@ -1,0 +1,34 @@
+[project]
+name = "lscrib"
+version = "0.1.0"
+description = "API local-first de transcripción de audio/video con Whisper (faster-whisper)"
+readme = "README.md"
+authors = [
+    { name = "Yelt-dev", email = "yeltsin.lopez94@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.138.1",
+    "faster-whisper>=1.2.1",
+    "pydantic-settings>=2.14.2",
+    "python-multipart>=0.0.32",
+    "sqlmodel>=0.0.39",
+    "sse-starlette>=3.4.5",
+    "uvicorn[standard]>=0.49.0",
+]
+
+[project.scripts]
+lscrib = "lscrib:main"
+
+[build-system]
+requires = ["uv_build>=0.11.25,<0.12.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
