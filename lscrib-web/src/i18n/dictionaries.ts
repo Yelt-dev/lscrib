@@ -71,9 +71,7 @@ export const dictionaries = {
     'sidebar.title': 'Trabajos',
     'sidebar.empty': 'Aún no hay trabajos. Arrastra un archivo para empezar.',
 
-    'backend.checking': 'comprobando…',
-    'backend.connected': 'backend conectado',
-    'backend.offline': 'sin conexión — arranca lscrib-api',
+    'server.offline': 'No se pudo conectar con el servidor. Revisa que lscrib esté en marcha.',
 
     'theme.toggle': 'Cambiar tema',
     'uilang.toggle': 'Idioma de la interfaz',
@@ -145,9 +143,7 @@ export const dictionaries = {
     'sidebar.title': 'Jobs',
     'sidebar.empty': 'No jobs yet. Drop a file to start.',
 
-    'backend.checking': 'checking…',
-    'backend.connected': 'backend connected',
-    'backend.offline': 'offline — start lscrib-api',
+    'server.offline': 'Couldn’t reach the server. Make sure lscrib is running.',
 
     'theme.toggle': 'Toggle theme',
     'uilang.toggle': 'Interface language',

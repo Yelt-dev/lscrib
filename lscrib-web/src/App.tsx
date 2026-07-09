@@ -121,6 +121,12 @@ function App() {
       <main className="mx-auto max-w-6xl px-6 py-8">
         <div className="flex flex-col gap-8 lg:flex-row">
           <section className="flex min-w-0 flex-1 flex-col gap-6">
+            {health === false && (
+              <div className="rounded-lg border border-danger/40 bg-danger/10 px-4 py-2 text-sm text-danger-fg">
+                {t('server.offline')}
+              </div>
+            )}
+
             <Dropzone onFile={handleFile} disabled={uploading} />
 
             {notice && (
@@ -152,14 +158,6 @@ function App() {
           />
         </div>
       </main>
-
-      <footer className="mx-auto max-w-6xl px-6 pb-8 text-xs text-muted-foreground">
-        {health === null
-          ? t('backend.checking')
-          : health
-            ? `● ${t('backend.connected')}`
-            : `○ ${t('backend.offline')}`}
-      </footer>
     </div>
   )
 }
