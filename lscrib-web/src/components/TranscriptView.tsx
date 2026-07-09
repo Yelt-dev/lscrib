@@ -47,7 +47,7 @@ export function TranscriptView({ job }: { job: Job }) {
   const mediaRef = useRef<HTMLMediaElement | null>(null)
   const segRefs = useRef(new Map<number, HTMLElement>())
 
-  const segments = detail?.segments ?? []
+  const segments = useMemo(() => detail?.segments ?? [], [detail])
 
   // Carga los segmentos; mientras el job está activo, refresca cada 1.5 s para
   // el efecto de "transcript apareciendo en streaming" (doc 09).
