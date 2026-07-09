@@ -62,8 +62,12 @@ def transcribe(
     audio_path: Path,
     model: str,
     language: str | None = None,
+    prompt: str | None = None,
 ) -> Transcription:
     """Transcribe `audio_path`. `language=None` → autodetección (R10).
+
+    `prompt` (vocabulario: nombres propios, jerga) se pasa como `hotwords` para
+    sesgar el reconocimiento hacia esos términos y mejorar la precisión.
 
     Devuelve un `Transcription` con el idioma detectado y un iterador perezoso
     de segmentos. La descarga del modelo ocurre dentro de `_get_model` la
@@ -74,6 +78,7 @@ def transcribe(
         str(audio_path),
         language=language,
         word_timestamps=True,
+        hotwords=prompt or None,
     )
 
     def _iter() -> Iterator[TranscribedSegment]:

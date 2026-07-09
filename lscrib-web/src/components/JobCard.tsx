@@ -41,6 +41,7 @@ export function JobCard({
   const { t } = useI18n()
   const [model, setModel] = useState(job.model)
   const [language, setLanguage] = useState(job.language ?? 'auto')
+  const [prompt, setPrompt] = useState(job.prompt ?? '')
   const [busy, setBusy] = useState(false)
   const [confirmDownload, setConfirmDownload] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
@@ -59,7 +60,7 @@ export function JobCard({
   async function start() {
     setBusy(true)
     try {
-      const updated = await api.transcribe(job.id, { model, language })
+      const updated = await api.transcribe(job.id, { model, language, prompt })
       onPatch(updated)
       onSelect()
     } catch (err) {
@@ -152,6 +153,19 @@ export function JobCard({
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <ModelSelect models={models} value={model} onChange={setModel} disabled={busy} />
             <LanguageSelect value={language} onChange={setLanguage} disabled={busy} />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-medium text-muted-foreground">
+              {t('vocab.label')}
+            </label>
+            <input
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              disabled={busy}
+              placeholder={t('vocab.placeholder')}
+              className="h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
+            />
+            <p className="text-xs text-muted-foreground">{t('vocab.help')}</p>
           </div>
           <Button disabled={busy} onClick={onTranscribeClick}>
             <Sparkles className="size-4" />

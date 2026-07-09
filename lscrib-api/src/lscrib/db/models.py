@@ -29,6 +29,7 @@ class Job(SQLModel, table=True):
     media_type: MediaType
     language: str | None = None                  # null hasta detectar (R10)
     model: str
+    prompt: str | None = None                    # vocabulario/nombres propios (hotwords)
     status: JobStatus = JobStatus.UPLOADED
     progress: float = 0.0                        # 0.0–1.0 (barra en vivo)
     position: int = Field(default=0, index=True)  # orden en la cola (reordenable, R7)

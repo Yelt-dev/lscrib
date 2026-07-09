@@ -18,6 +18,10 @@ export const dictionaries = {
     'lang.label': 'Idioma del audio',
     'lang.auto': 'Detectar automáticamente',
 
+    'vocab.label': 'Vocabulario (opcional)',
+    'vocab.placeholder': 'Nombres propios, jerga… ej: Julián Quiñones, México',
+    'vocab.help': 'Ayuda al modelo a acertar nombres y términos poco comunes.',
+
     'job.transcribe': 'Transcribir',
     'job.cancel': 'Cancelar',
     'job.retry': 'Reintentar',
@@ -95,6 +99,10 @@ export const dictionaries = {
 
     'lang.label': 'Audio language',
     'lang.auto': 'Detect automatically',
+
+    'vocab.label': 'Vocabulary (optional)',
+    'vocab.placeholder': 'Proper nouns, jargon… e.g. Julián Quiñones, México',
+    'vocab.help': 'Helps the model get uncommon names and terms right.',
 
     'job.transcribe': 'Transcribe',
     'job.cancel': 'Cancel',

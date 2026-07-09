@@ -33,6 +33,7 @@ export interface Job {
   duration_sec: number | null
   language: string | null
   model: string
+  prompt?: string | null
   status: JobStatus
   progress: number
   error: string | null

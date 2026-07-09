@@ -62,10 +62,14 @@ export const api = {
     return { job, existing: res.headers.get('X-Existing-Job') === 'true' }
   },
 
-  transcribe(id: string, opts?: { model?: string; language?: string }): Promise<Job> {
+  transcribe(
+    id: string,
+    opts?: { model?: string; language?: string; prompt?: string },
+  ): Promise<Job> {
     const q = new URLSearchParams()
     if (opts?.model) q.set('model', opts.model)
     if (opts?.language) q.set('language', opts.language)
+    if (opts?.prompt != null) q.set('prompt', opts.prompt)
     const qs = q.toString()
     return fetch(`/api/jobs/${id}/transcribe${qs ? `?${qs}` : ''}`, {
       method: 'POST',

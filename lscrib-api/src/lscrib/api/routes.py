@@ -186,11 +186,13 @@ async def start_transcription(
     job_id: str,
     model: str | None = Query(default=None),
     language: str | None = Query(default=None),
+    prompt: str | None = Query(default=None),
     session: Session = Depends(get_session),
 ):
     """`uploaded → queued` (acción explícita, doc 07). También reintenta failed/canceled.
 
-    `model`/`language` opcionales permiten reprocesar con otra elección (doc 07).
+    `model`/`language`/`prompt` opcionales permiten reprocesar con otra elección
+    (doc 07). `prompt` es vocabulario (nombres propios, jerga) para acertar mejor.
     """
     job = _get_or_404(session, job_id)
     if not can_transition(job.status, JobStatus.QUEUED):
@@ -204,6 +206,8 @@ async def start_transcription(
         job.model = model
     if language is not None:
         job.language = None if language == "auto" else language
+    if prompt is not None:
+        job.prompt = prompt.strip() or None
     # Reintento: descarta segmentos parciales de una pasada anterior.
     for seg in session.exec(select(Segment).where(Segment.job_id == job_id)).all():
         session.delete(seg)

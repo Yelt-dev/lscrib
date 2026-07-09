@@ -59,7 +59,7 @@ def _run_job(env, job_id: str) -> list:
 def test_happy_path_completes_and_persists(worker_env, monkeypatch):
     _stub_media(monkeypatch)
 
-    def fake_transcribe(path, model, language):
+    def fake_transcribe(path, model, language, prompt=None):
         def gen():
             yield TranscribedSegment(0, 0, 5000, "hola")
             yield TranscribedSegment(1, 5000, 10000, "mundo")
@@ -93,7 +93,7 @@ def test_happy_path_completes_and_persists(worker_env, monkeypatch):
 def test_progress_increases_monotonically(worker_env, monkeypatch):
     _stub_media(monkeypatch)
 
-    def fake_transcribe(path, model, language):
+    def fake_transcribe(path, model, language, prompt=None):
         def gen():
             for i in range(1, 6):
                 yield TranscribedSegment(i - 1, (i - 1) * 2000, i * 2000, f"s{i}")
@@ -114,7 +114,7 @@ def test_cancel_midway_cleans_up(worker_env, monkeypatch):
     _stub_media(monkeypatch)
 
     def make_transcribe(q):
-        def fake_transcribe(path, model, language):
+        def fake_transcribe(path, model, language, prompt=None):
             def gen():
                 for i in range(5):
                     if i == 1:
@@ -182,7 +182,7 @@ def test_canceled_while_queued_is_skipped(worker_env, monkeypatch):
     _stub_media(monkeypatch)
     called = {"transcribe": False}
 
-    def fake_transcribe(path, model, language):
+    def fake_transcribe(path, model, language, prompt=None):
         called["transcribe"] = True
         return Transcription("en", 10.0, iter(()))
 

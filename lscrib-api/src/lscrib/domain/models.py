@@ -62,6 +62,7 @@ class JobRead(BaseModel):
     duration_sec: int | None = None
     language: str | None = None
     model: str
+    prompt: str | None = None
     status: JobStatus
     progress: float = 0.0
     error: str | None = None

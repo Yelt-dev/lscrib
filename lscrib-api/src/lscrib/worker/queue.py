@@ -148,7 +148,9 @@ class JobQueue:
             #    es bloqueante → hilo aparte para no congelar el event loop.
             self._advance(session, job, JobStatus.TRANSCRIBING, progress=0.0)
             forced = None if job.language in (None, "auto") else job.language
-            tr = await asyncio.to_thread(transcribe, wav_path, job.model, forced)
+            tr = await asyncio.to_thread(
+                transcribe, wav_path, job.model, forced, job.prompt
+            )
             total = float(duration or tr.duration_sec or 0.0)
             job.language = tr.language  # idioma detectado (R10)
             session.add(job)
