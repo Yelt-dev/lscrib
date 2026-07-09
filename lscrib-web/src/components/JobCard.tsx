@@ -101,7 +101,7 @@ export function JobCard({
       onClick={onSelect}
       className={cn(
         'cursor-pointer p-4 transition-shadow hover:shadow-md',
-        selected && 'ring-2 ring-brand',
+        selected && 'ring-2 ring-inset ring-brand',
       )}
     >
       <div className="flex items-start justify-between gap-3">

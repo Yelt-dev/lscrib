@@ -59,7 +59,7 @@ export function JobsSidebar({
           {t('sidebar.empty')}
         </p>
       ) : (
-        <ul className="flex flex-col gap-1.5 overflow-y-auto pr-1">
+        <ul className="flex min-h-0 flex-col gap-1.5 overflow-y-auto pr-1">
           {display.map((job) => {
             const qi = queuedIds.indexOf(job.id)
             const isQueued = qi !== -1
@@ -73,8 +73,8 @@ export function JobsSidebar({
                     if (e.key === 'Enter' || e.key === ' ') onSelect(job.id)
                   }}
                   className={cn(
-                    'flex w-full cursor-pointer flex-col gap-1.5 rounded-lg border border-border bg-card p-3 text-left transition-colors hover:bg-accent/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-                    selectedId === job.id && 'ring-2 ring-brand',
+                    'flex w-full cursor-pointer flex-col gap-1.5 rounded-lg border border-border bg-card p-3 text-left transition-colors hover:bg-accent/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring',
+                    selectedId === job.id && 'ring-2 ring-inset ring-brand',
                   )}
                 >
                   <div className="flex items-center justify-between gap-2">
