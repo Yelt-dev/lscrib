@@ -38,8 +38,8 @@ function App() {
     api
       .listJobs(PAGE, 0)
       .then((page) => {
-        setJobs(page.items)
-        setTotal(page.total)
+        setJobs(page.items ?? [])
+        setTotal(page.total ?? 0)
       })
       .catch(() => {})
   }, [])
@@ -52,9 +52,9 @@ function App() {
         // dedupe por id (por si entró un job nuevo entre páginas)
         setJobs((prev) => {
           const seen = new Set(prev.map((j) => j.id))
-          return [...prev, ...page.items.filter((j) => !seen.has(j.id))]
+          return [...prev, ...(page.items ?? []).filter((j) => !seen.has(j.id))]
         })
-        setTotal(page.total)
+        setTotal(page.total ?? 0)
       })
       .finally(() => setLoadingMore(false))
   }, [jobs.length])
