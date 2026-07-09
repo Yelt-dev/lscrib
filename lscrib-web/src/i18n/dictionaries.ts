@@ -63,7 +63,11 @@ export const dictionaries = {
 
     'editor.title': 'Transcript',
     'editor.empty': 'El texto aparecerá aquí conforme se transcribe.',
-    'editor.hintClick': 'Haz clic en una palabra para saltar el audio a ese punto.',
+    'editor.hint': 'Doble clic en una línea para editarla · clic en una palabra salta el audio ahí.',
+    'search.placeholder': 'Buscar en el transcript…',
+    'search.count': '{current}/{total}',
+    'search.none': 'sin resultados',
+    'follow.label': 'Seguir reproducción',
 
     'export.as': 'Exportar como',
     'export.saved': 'Guardado {filename}',
@@ -135,7 +139,11 @@ export const dictionaries = {
 
     'editor.title': 'Transcript',
     'editor.empty': 'Text will appear here as it is transcribed.',
-    'editor.hintClick': 'Click a word to jump the audio to that point.',
+    'editor.hint': 'Double-click a line to edit it · click a word to jump the audio there.',
+    'search.placeholder': 'Search the transcript…',
+    'search.count': '{current}/{total}',
+    'search.none': 'no results',
+    'follow.label': 'Follow playback',
 
     'export.as': 'Export as',
     'export.saved': 'Saved {filename}',
