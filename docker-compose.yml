@@ -1,0 +1,16 @@
+# lscrib — un solo comando: `docker compose up` (R13).
+# Levanta backend + frontend en un contenedor, todo local (R1).
+services:
+  lscrib:
+    build: .
+    container_name: lscrib
+    ports:
+      - "8000:8000"
+    volumes:
+      - lscrib-data:/data       # audios subidos + BD (nunca sale de tu máquina)
+      - lscrib-models:/models   # caché de modelos Whisper (se baja 1 vez, R2)
+    restart: unless-stopped
+
+volumes:
+  lscrib-data:
+  lscrib-models:

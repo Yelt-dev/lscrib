@@ -41,7 +41,18 @@ llamada a la red es la descarga puntual del modelo desde Hugging Face la primera
 - **Frontend:** React 19 · Vite · TypeScript · Tailwind v4 · shadcn/ui
 - **Media:** ffmpeg
 
-## Cómo ejecutarlo (dev)
+## Arranque rápido (un comando)
+
+Con [Docker](https://docs.docker.com/get-docker/) instalado:
+
+```bash
+docker compose up
+```
+
+Abre <http://localhost:8000>. La primera vez descarga el modelo Whisper elegido;
+los audios y la base de datos viven en volúmenes locales y nunca salen de tu máquina.
+
+## Desarrollo
 
 Requiere [uv](https://docs.astral.sh/uv/), Node.js y ffmpeg
 (`brew install ffmpeg` / `apt install ffmpeg`).
@@ -50,11 +61,9 @@ Requiere [uv](https://docs.astral.sh/uv/), Node.js y ffmpeg
 # backend  -> http://127.0.0.1:8000
 cd lscrib-api && uv run lscrib
 
-# frontend -> http://localhost:5173   (en otra terminal)
+# frontend -> http://localhost:5173   (en otra terminal, con recarga en caliente)
 cd lscrib-web && npm install && npm run dev
 ```
-
-> El arranque de un solo comando (`docker compose up`) está en el roadmap.
 
 ## Licencia
 
