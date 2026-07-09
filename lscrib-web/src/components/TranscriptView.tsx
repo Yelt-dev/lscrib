@@ -177,7 +177,7 @@ export function TranscriptView({ job }: { job: Job }) {
   return (
     <div className="flex flex-col gap-4">
       {/* Cabecera pegajosa: reproductor + controles siempre a mano (doc 09). */}
-      <div className="sticky top-0 z-20 -mx-1 flex flex-col gap-3 bg-background/95 px-1 pb-3 pt-2 backdrop-blur">
+      <div className="sticky top-14 z-20 -mx-1 flex flex-col gap-3 bg-background/95 px-1 pb-3 pt-2 backdrop-blur">
         {hasMedia &&
           (isVideo ? (
             <video

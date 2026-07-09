@@ -108,7 +108,7 @@ function App() {
 
   return (
     <div className="min-h-svh">
-      <header className="flex items-center justify-between border-b border-border px-6 py-3">
+      <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-border bg-background/95 px-6 backdrop-blur">
         {/* Wordmark: Playwrite Indonesia (caligráfica) = la "tinta del escribano"
             (doc 10). Auto-hospedada, local (R1). */}
         <h1 className="select-none font-logo text-2xl leading-none">lscrib</h1>
