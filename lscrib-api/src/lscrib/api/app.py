@@ -4,10 +4,12 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from lscrib import __version__
 from lscrib.api.meta import router as meta_router
 from lscrib.api.routes import router as jobs_router
+from lscrib.config import settings
 from lscrib.db.session import init_db, recover_stuck_jobs
 from lscrib.worker.queue import queue
 
@@ -42,4 +44,13 @@ def create_app() -> FastAPI:
 
     app.include_router(jobs_router)
     app.include_router(meta_router)
+
+    # En producción (un comando, R13) el backend sirve el build de React desde el
+    # mismo origen. Se monta al final: /health y /api/* ya están registrados y
+    # tienen prioridad; el resto cae al SPA. En dev static_dir=None y esto se salta.
+    if settings.static_dir and settings.static_dir.is_dir():
+        app.mount(
+            "/", StaticFiles(directory=settings.static_dir, html=True), name="spa"
+        )
+
     return app

@@ -16,6 +16,10 @@ class Settings(BaseSettings):
     data_dir: Path = Path("./data")        # medios subidos + artefactos
     db_path: Path = Path("./lscrib.db")    # metadatos (SQLite)
 
+    # frontend: en producción FastAPI sirve el build de React (R13, un comando).
+    # En dev queda None y Vite sirve el front con HMR.
+    static_dir: Path | None = None
+
     # límites (R15): tope por defecto ~2 GB, ajustable por entorno
     max_file_mb: int = 2048
 
