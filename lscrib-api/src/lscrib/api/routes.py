@@ -18,6 +18,7 @@ from fastapi import (
 )
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
+from sqlalchemy import func
 from sqlmodel import Session, select
 from sse_starlette.sse import EventSourceResponse
 
@@ -139,11 +140,23 @@ async def create_job(
     return _to_read(job)
 
 
-@router.get("", response_model=list[JobRead])
-async def list_jobs(session: Session = Depends(get_session)):
-    """Lista de trabajos, más recientes primero (para la cola batch del MVP)."""
-    jobs = session.exec(select(Job).order_by(Job.created_at.desc())).all()
-    return [_to_read(j) for j in jobs]
+class JobPage(BaseModel):
+    items: list[JobRead]
+    total: int
+
+
+@router.get("", response_model=JobPage)
+async def list_jobs(
+    limit: int = Query(default=30, ge=1, le=200),
+    offset: int = Query(default=0, ge=0),
+    session: Session = Depends(get_session),
+):
+    """Trabajos paginados, más recientes primero. `total` para saber si hay más."""
+    total = session.exec(select(func.count()).select_from(Job)).one()
+    rows = session.exec(
+        select(Job).order_by(Job.created_at.desc()).limit(limit).offset(offset)
+    ).all()
+    return JobPage(items=[_to_read(j) for j in rows], total=total)
 
 
 @router.get("/{job_id}", response_model=JobDetail)

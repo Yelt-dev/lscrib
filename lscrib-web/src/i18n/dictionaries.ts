@@ -80,6 +80,8 @@ export const dictionaries = {
 
     'sidebar.title': 'Trabajos',
     'sidebar.empty': 'Aún no hay trabajos. Arrastra un archivo para empezar.',
+    'sidebar.showing': '{shown} de {total}',
+    'sidebar.loadMore': 'Cargar más',
 
     'server.offline': 'No se pudo conectar con el servidor. Revisa que lscrib esté en marcha.',
 
@@ -162,6 +164,8 @@ export const dictionaries = {
 
     'sidebar.title': 'Jobs',
     'sidebar.empty': 'No jobs yet. Drop a file to start.',
+    'sidebar.showing': '{shown} of {total}',
+    'sidebar.loadMore': 'Load more',
 
     'server.offline': 'Couldn’t reach the server. Make sure lscrib is running.',
 

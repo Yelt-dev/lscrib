@@ -1,5 +1,7 @@
 import { ChevronDown, ChevronUp } from 'lucide-react'
+import { useMemo } from 'react'
 import { StatusBadge } from '@/components/StatusBadge'
+import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { useI18n } from '@/i18n'
 import { cn } from '@/lib/utils'
@@ -9,30 +11,56 @@ const ACTIVE = new Set(['queued', 'normalizing', 'transcribing'])
 
 export function JobsSidebar({
   jobs,
+  total,
+  loadingMore,
   selectedId,
   onSelect,
   onMove,
+  onLoadMore,
 }: {
   jobs: Job[]
+  total: number
+  loadingMore: boolean
   selectedId: string | null
   onSelect: (id: string) => void
   onMove: (id: string, direction: 'up' | 'down') => void
+  onLoadMore: () => void
 }) {
   const { t } = useI18n()
-  const queuedIds = jobs.filter((j) => j.status === 'queued').map((j) => j.id)
+
+  // Los `queued` se muestran en orden de cola (position) sin mover al resto.
+  const display = useMemo(() => {
+    const arr = [...jobs]
+    const slots = arr.map((j, i) => ({ j, i })).filter((x) => x.j.status === 'queued')
+    const sorted = [...slots].sort((a, b) => a.j.position - b.j.position)
+    slots.forEach((slot, k) => {
+      arr[slot.i] = sorted[k].j
+    })
+    return arr
+  }, [jobs])
+
+  const queuedIds = display.filter((j) => j.status === 'queued').map((j) => j.id)
 
   return (
-    <aside className="flex w-full flex-col gap-2 lg:w-80">
-      <h2 className="px-1 text-sm font-semibold text-muted-foreground">
-        {t('sidebar.title')}
-      </h2>
+    <aside className="flex w-full flex-col gap-2 lg:sticky lg:top-14 lg:max-h-[calc(100vh-5rem)] lg:w-80 lg:self-start">
+      <div className="flex items-baseline justify-between px-1">
+        <h2 className="text-sm font-semibold text-muted-foreground">
+          {t('sidebar.title')}
+        </h2>
+        {total > 0 && (
+          <span className="text-xs text-muted-foreground">
+            {t('sidebar.showing', { shown: jobs.length, total })}
+          </span>
+        )}
+      </div>
+
       {jobs.length === 0 ? (
         <p className="rounded-lg border border-dashed border-border p-4 text-center text-xs text-muted-foreground">
           {t('sidebar.empty')}
         </p>
       ) : (
-        <ul className="flex flex-col gap-1.5">
-          {jobs.map((job) => {
+        <ul className="flex flex-col gap-1.5 overflow-y-auto pr-1">
+          {display.map((job) => {
             const qi = queuedIds.indexOf(job.id)
             const isQueued = qi !== -1
             return (
@@ -96,6 +124,18 @@ export function JobsSidebar({
             )
           })}
         </ul>
+      )}
+
+      {jobs.length < total && (
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={loadingMore}
+          onClick={onLoadMore}
+          className="w-full"
+        >
+          {t('sidebar.loadMore')}
+        </Button>
       )}
     </aside>
   )

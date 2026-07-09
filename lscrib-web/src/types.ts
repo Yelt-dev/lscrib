@@ -36,7 +36,13 @@ export interface Job {
   prompt?: string | null
   status: JobStatus
   progress: number
+  position: number
   error: string | null
+}
+
+export interface JobPage {
+  items: Job[]
+  total: number
 }
 
 export interface JobDetail extends Job {

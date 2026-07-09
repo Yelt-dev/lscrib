@@ -1,6 +1,6 @@
 /** Cliente HTTP tipado del backend lscrib-api. `/api` va proxied a :8000 (vite). */
 
-import type { Job, JobDetail, ModelsResponse, Segment } from './types'
+import type { Job, JobDetail, JobPage, ModelsResponse, Segment } from './types'
 
 export class ApiError extends Error {
   status: number
@@ -39,8 +39,10 @@ export const api = {
     return fetch('/api/models').then((r) => parse<ModelsResponse>(r))
   },
 
-  listJobs(): Promise<Job[]> {
-    return fetch('/api/jobs').then((r) => parse<Job[]>(r))
+  listJobs(limit = 30, offset = 0): Promise<JobPage> {
+    return fetch(`/api/jobs?limit=${limit}&offset=${offset}`).then((r) =>
+      parse<JobPage>(r),
+    )
   },
 
   getJob(id: string): Promise<JobDetail> {

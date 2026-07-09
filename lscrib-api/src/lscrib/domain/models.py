@@ -65,6 +65,7 @@ class JobRead(BaseModel):
     prompt: str | None = None
     status: JobStatus
     progress: float = 0.0
+    position: int = 0            # orden en la cola (para reordenar visible, R7)
     error: str | None = None
 
 

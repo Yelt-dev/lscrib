@@ -10,6 +10,7 @@ import { api, ApiError } from '@/api'
 import type { Job, JobEvent, ModelStatus } from '@/types'
 
 const ACTIVE = new Set(['queued', 'normalizing', 'transcribing'])
+const PAGE = 30
 
 function App() {
   const { t } = useI18n()
@@ -17,6 +18,8 @@ function App() {
   const [models, setModels] = useState<ModelStatus[]>([])
   const [defaultModel, setDefaultModel] = useState('small')
   const [jobs, setJobs] = useState<Job[]>([])
+  const [total, setTotal] = useState(0)
+  const [loadingMore, setLoadingMore] = useState(false)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
@@ -32,25 +35,51 @@ function App() {
         setDefaultModel(r.default)
       })
       .catch(() => {})
-    api.listJobs().then(setJobs).catch(() => {})
+    api
+      .listJobs(PAGE, 0)
+      .then((page) => {
+        setJobs(page.items)
+        setTotal(page.total)
+      })
+      .catch(() => {})
   }, [])
+
+  const loadMore = useCallback(() => {
+    setLoadingMore(true)
+    api
+      .listJobs(PAGE, jobs.length)
+      .then((page) => {
+        // dedupe por id (por si entró un job nuevo entre páginas)
+        setJobs((prev) => {
+          const seen = new Set(prev.map((j) => j.id))
+          return [...prev, ...page.items.filter((j) => !seen.has(j.id))]
+        })
+        setTotal(page.total)
+      })
+      .finally(() => setLoadingMore(false))
+  }, [jobs.length])
 
   const patchJob = useCallback((id: string, patch: Partial<Job>) => {
     setJobs((prev) => prev.map((j) => (j.id === id ? { ...j, ...patch } : j)))
   }, [])
 
-  const removeJob = useCallback(
-    (id: string) => {
-      setJobs((prev) => prev.filter((j) => j.id !== id))
-      setSelectedId((cur) => (cur === id ? null : cur))
-    },
-    [],
-  )
+  const removeJob = useCallback((id: string) => {
+    setJobs((prev) => prev.filter((j) => j.id !== id))
+    setTotal((n) => Math.max(0, n - 1))
+    setSelectedId((cur) => (cur === id ? null : cur))
+  }, [])
 
   const moveJob = useCallback((id: string, direction: 'up' | 'down') => {
     api
       .move(id, direction)
-      .then(setJobs)
+      .then((all) => {
+        // El endpoint devuelve el orden completo; parcheamos solo las posiciones
+        // de los jobs que tenemos cargados (respeta la paginación).
+        const pos = new Map(all.map((j) => [j.id, j.position]))
+        setJobs((prev) =>
+          prev.map((j) => (pos.has(j.id) ? { ...j, position: pos.get(j.id)! } : j)),
+        )
+      })
       .catch(() => {})
   }, [])
 
@@ -93,6 +122,7 @@ function App() {
           ? prev.map((j) => (j.id === job.id ? job : j))
           : [job, ...prev],
       )
+      if (!existing) setTotal((n) => n + 1)
       setSelectedId(job.id)
       if (existing) setNotice(t('error.exists'))
     } catch (err) {
@@ -152,9 +182,12 @@ function App() {
 
           <JobsSidebar
             jobs={jobs}
+            total={total}
+            loadingMore={loadingMore}
             selectedId={selectedId}
             onSelect={setSelectedId}
             onMove={moveJob}
+            onLoadMore={loadMore}
           />
         </div>
       </main>
