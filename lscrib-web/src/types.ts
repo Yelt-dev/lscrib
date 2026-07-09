@@ -15,6 +15,7 @@ export interface Word {
   w: string
   start_ms: number
   end_ms: number
+  p?: number | null // confianza 0–1 del modelo (resaltado de dudosas)
 }
 
 export interface Segment {

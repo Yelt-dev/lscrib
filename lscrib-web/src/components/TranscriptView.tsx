@@ -1,4 +1,11 @@
-import { ChevronDown, ChevronUp, Crosshair, Pencil, Search } from 'lucide-react'
+import {
+  ChevronDown,
+  ChevronUp,
+  Crosshair,
+  Highlighter,
+  Pencil,
+  Search,
+} from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ExportBar } from '@/components/ExportBar'
 import { Button } from '@/components/ui/button'
@@ -8,6 +15,9 @@ import { cn } from '@/lib/utils'
 import type { Job, JobDetail, Segment } from '@/types'
 
 const POLL_STATES = new Set(['queued', 'normalizing', 'transcribing'])
+
+// Debajo de esta confianza, la palabra se marca como "dudosa" para revisión.
+const LOW_CONF = 0.6
 
 const reducedMotion = () =>
   window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -32,6 +42,7 @@ export function TranscriptView({ job }: { job: Job }) {
   const [editing, setEditing] = useState<number | null>(null)
   const [query, setQuery] = useState('')
   const [follow, setFollow] = useState(true)
+  const [review, setReview] = useState(true)
   const [matchPos, setMatchPos] = useState(0)
   const mediaRef = useRef<HTMLMediaElement | null>(null)
   const segRefs = useRef(new Map<number, HTMLElement>())
@@ -252,6 +263,17 @@ export function TranscriptView({ job }: { job: Job }) {
                 <Crosshair className="size-3.5" />
                 {t('follow.label')}
               </Button>
+
+              <Button
+                variant={review ? 'secondary' : 'outline'}
+                size="sm"
+                onClick={() => setReview((r) => !r)}
+                title={t('review.title')}
+                aria-pressed={review}
+              >
+                <Highlighter className="size-3.5" />
+                {t('review.label')}
+              </Button>
             </>
           )}
 
@@ -274,6 +296,7 @@ export function TranscriptView({ job }: { job: Job }) {
                 currentMs={currentMs}
                 isActive={si === activeSeg}
                 query={q}
+                review={review}
                 curMatchWi={currentMatch?.si === si ? currentMatch.wi : null}
                 editing={editing === seg.index}
                 registerRef={(el) => {
@@ -298,6 +321,7 @@ function SegmentRow({
   currentMs,
   isActive,
   query,
+  review,
   curMatchWi,
   editing,
   registerRef,
@@ -310,6 +334,7 @@ function SegmentRow({
   currentMs: number
   isActive: boolean
   query: string
+  review: boolean
   curMatchWi: number | null
   editing: boolean
   registerRef: (el: HTMLElement | null) => void
@@ -364,11 +389,20 @@ function SegmentRow({
           if (i === curMatchWi) hl = 'bg-warning/60 ring-1 ring-warning'
           else if (query && w.w.toLowerCase().includes(query)) hl = 'bg-warning/30'
           else if (i === active) hl = 'bg-brand/25 text-foreground'
+          // Subrayado (compone con el fondo) para palabras de baja confianza.
+          const uncertain =
+            review && w.p != null && w.p < LOW_CONF
+              ? 'underline decoration-warning decoration-dotted underline-offset-4'
+              : ''
           return (
             <span
               key={i}
               onClick={() => onSeek(w.start_ms)}
-              className={cn('cursor-pointer rounded transition-colors hover:bg-brand/20', hl)}
+              className={cn(
+                'cursor-pointer rounded transition-colors hover:bg-brand/20',
+                hl,
+                uncertain,
+              )}
             >
               {w.w}
             </span>

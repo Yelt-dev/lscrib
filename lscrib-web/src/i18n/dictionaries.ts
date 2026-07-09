@@ -68,6 +68,8 @@ export const dictionaries = {
     'search.count': '{current}/{total}',
     'search.none': 'sin resultados',
     'follow.label': 'Seguir reproducción',
+    'review.label': 'Dudosas',
+    'review.title': 'Resalta las palabras de baja confianza del modelo, para revisarlas',
 
     'export.as': 'Exportar como',
     'export.saved': 'Guardado {filename}',
@@ -144,6 +146,8 @@ export const dictionaries = {
     'search.count': '{current}/{total}',
     'search.none': 'no results',
     'follow.label': 'Follow playback',
+    'review.label': 'Uncertain',
+    'review.title': 'Highlight low-confidence words from the model, to review them',
 
     'export.as': 'Export as',
     'export.saved': 'Saved {filename}',

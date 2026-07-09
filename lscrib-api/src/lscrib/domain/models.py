@@ -44,6 +44,7 @@ class WordTS(BaseModel):
     w: str
     start_ms: int
     end_ms: int
+    p: float | None = None  # confianza 0–1 del modelo (para resaltar dudosas)
 
 
 class SegmentRead(BaseModel):

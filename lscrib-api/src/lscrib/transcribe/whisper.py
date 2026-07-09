@@ -85,6 +85,10 @@ def transcribe(
                         "w": w.word,
                         "start_ms": int(w.start * 1000),
                         "end_ms": int(w.end * 1000),
+                        # confianza 0–1 del modelo; alimenta el resaltado de dudosas
+                        "p": round(float(w.probability), 3)
+                        if w.probability is not None
+                        else None,
                     }
                     for w in s.words
                 ]
