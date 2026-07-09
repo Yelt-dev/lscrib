@@ -1,6 +1,6 @@
 [project]
 name = "lscrib"
-version = "0.1.0"
+version = "0.1.0" # x-release-please-version
 description = "API local-first de transcripción de audio/video con Whisper (faster-whisper)"
 readme = "README.md"
 authors = [

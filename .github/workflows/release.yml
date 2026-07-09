@@ -1,0 +1,65 @@
+name: release
+
+# Flujo de release por conventional-commits (release-please).
+# En cada push a master, release-please mantiene un "release PR" que sube la
+# versión (version.txt + package.json + pyproject.toml) y el CHANGELOG a partir
+# de los mensajes de commit. Al mergear ese PR se crea el tag + GitHub Release, y
+# se construye/publica la imagen Docker multi-arch (amd64 + arm64) en GHCR.
+
+on:
+  push:
+    branches: [master]
+
+permissions:
+  contents: write # tags/releases + el release PR
+  pull-requests: write # el release PR
+  packages: write # push a GHCR
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - id: release
+        uses: googleapis/release-please-action@v4
+        # lee release-please-config.json + .release-please-manifest.json en la raíz
+
+  docker:
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Image name (owner en minúsculas)
+        run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/lscrib" >> "$GITHUB_ENV"
+
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE }}
+          tags: |
+            type=semver,pattern={{version}},value=${{ needs.release-please.outputs.tag_name }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ needs.release-please.outputs.tag_name }}
+            type=raw,value=latest
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
