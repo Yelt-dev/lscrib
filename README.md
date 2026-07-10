@@ -2,7 +2,7 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.png" />
-  <img alt="lscrib" src="assets/logo-light.png" width="360" />
+  <img alt="lscrib" src="assets/logo-light.png" width="300" />
 </picture>
 
 <br />
