@@ -52,7 +52,7 @@ export function JobCard({
   const selectedModel = models.find((m) => m.name === model)
 
   function onTranscribeClick() {
-    // R2: si el modelo no está descargado, confirmar antes de bajar cientos de MB.
+    // Si el modelo no está descargado, confirmar antes de bajar cientos de MB.
     if (selectedModel && !selectedModel.downloaded) setConfirmDownload(true)
     else void start()
   }
@@ -147,7 +147,7 @@ export function JobCard({
         </div>
       </div>
 
-      {/* `uploaded`: elegir modelo/idioma y transcribir (doc 07). */}
+      {/* `uploaded`: elegir modelo/idioma y transcribir. */}
       {job.status === 'uploaded' && (
         <div className="mt-4 flex flex-col gap-3" onClick={(e) => e.stopPropagation()}>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -174,7 +174,7 @@ export function JobCard({
         </div>
       )}
 
-      {/* Activo: barra de progreso en vivo + cancelar (R8). */}
+      {/* Activo: barra de progreso en vivo + cancelar. */}
       {active && (
         <div className="mt-4 flex flex-col gap-2" onClick={(e) => e.stopPropagation()}>
           <Progress
@@ -198,7 +198,7 @@ export function JobCard({
         </div>
       )}
 
-      {/* Fallo (R14) / cancelado: reintentar / reencolar. */}
+      {/* Fallo / cancelado: reintentar / reencolar. */}
       {(job.status === 'failed' || job.status === 'canceled') && (
         <div className="mt-4 flex flex-col gap-2" onClick={(e) => e.stopPropagation()}>
           {job.status === 'failed' && (
@@ -219,7 +219,7 @@ export function JobCard({
         </div>
       )}
 
-      {/* R2: confirmar descarga de modelo no cacheado. */}
+      {/* Confirmar descarga de modelo no cacheado. */}
       <Dialog open={confirmDownload} onOpenChange={setConfirmDownload}>
         <DialogContent onClick={(e) => e.stopPropagation()}>
           <DialogHeader>
@@ -244,7 +244,7 @@ export function JobCard({
         </DialogContent>
       </Dialog>
 
-      {/* R3: confirmar borrado real. */}
+      {/* Confirmar borrado real (elimina archivo y datos). */}
       <Dialog open={confirmDelete} onOpenChange={setConfirmDelete}>
         <DialogContent onClick={(e) => e.stopPropagation()}>
           <DialogHeader>

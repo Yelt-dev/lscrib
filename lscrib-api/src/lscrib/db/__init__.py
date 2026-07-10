@@ -1,1 +1,1 @@
-"""Persistencia ligera: SQLite (un archivo) vía SQLModel. Sin Postgres (doc 05)."""
+"""Persistencia ligera: SQLite (un archivo) vía SQLModel. Sin Postgres."""

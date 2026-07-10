@@ -1,9 +1,8 @@
 """initial schema
 
-Baseline del esquema para 0.1.0: tablas `job`, `segment` y `settings` (singleton),
-espejo del modelo conceptual (doc 05). Autogenerada y revisada a mano. Las BD de
-beta creadas con `create_all` se marcan (stamp) en esta revisión al arrancar, sin
-recrear tablas — ver `lscrib.db.migrate`.
+Baseline del esquema para 0.1.0: tablas `job`, `segment` y `settings` (singleton).
+Autogenerada y revisada a mano. Las BD creadas antes con `create_all` se marcan
+(stamp) en esta revisión al arrancar, sin recrear tablas — ver `lscrib.db.migrate`.
 
 Revision ID: 0001
 Revises:

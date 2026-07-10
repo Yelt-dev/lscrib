@@ -1,4 +1,4 @@
-"""Rutas de Jobs: subida, cola, cancelación, progreso (SSE) y export (doc 07/08)."""
+"""Rutas de Jobs: subida, cola, cancelación, progreso (SSE) y export."""
 
 import asyncio
 import hashlib
@@ -65,7 +65,7 @@ def _get_or_404(session: Session, job_id: str) -> Job:
 
 
 def _next_position(session: Session) -> int:
-    """Siguiente posición al final de la cola (R7). Los `queued` mantienen orden."""
+    """Siguiente posición al final de la cola. Los `queued` mantienen su orden."""
     positions = session.exec(
         select(Job.position).where(Job.status == JobStatus.QUEUED)
     ).all()
@@ -80,7 +80,7 @@ async def create_job(
     language: str = Form(default="auto"),
     session: Session = Depends(get_session),
 ):
-    """Subida por arrastre → calcula hash, guarda, estado `uploaded` (R6/R9/R15)."""
+    """Subida por arrastre → calcula hash, guarda, estado `uploaded`."""
     model = model or settings.default_model
     if model not in CATALOG_BY_NAME:
         raise HTTPException(status_code=400, detail=f"Modelo desconocido: {model}")
@@ -90,7 +90,7 @@ async def create_job(
     dest = settings.data_dir / f"{job_id}{suffix}"
     dest.parent.mkdir(parents=True, exist_ok=True)
 
-    # Stream a disco calculando SHA-256 (R9) sin cargar el archivo en RAM (R15).
+    # Stream a disco calculando SHA-256 sin cargar el archivo entero en RAM.
     max_bytes = settings.max_file_mb * 1024 * 1024
     hasher = hashlib.sha256()
     size = 0
@@ -115,7 +115,7 @@ async def create_job(
 
     file_hash = hasher.hexdigest()
 
-    # Idempotencia (R9): si ya existe un trabajo con este hash, reusarlo.
+    # Idempotencia: si ya existe un trabajo con este hash, reusarlo (no reprocesa el mismo audio).
     existing = session.exec(
         select(Job).where(Job.file_hash == file_hash)
     ).first()
@@ -181,7 +181,7 @@ async def update_segment(
     body: SegmentUpdate,
     session: Session = Depends(get_session),
 ):
-    """Edición del transcript por segmento (doc 09). Los exports reflejan el cambio."""
+    """Edición del transcript por segmento. Los exports reflejan el cambio."""
     seg = session.exec(
         select(Segment).where(Segment.job_id == job_id, Segment.index == index)
     ).first()
@@ -202,10 +202,10 @@ async def start_transcription(
     prompt: str | None = Query(default=None),
     session: Session = Depends(get_session),
 ):
-    """`uploaded → queued` (acción explícita, doc 07). También reintenta failed/canceled.
+    """`uploaded → queued` (acción explícita). También reintenta failed/canceled.
 
-    `model`/`language`/`prompt` opcionales permiten reprocesar con otra elección
-    (doc 07). `prompt` es vocabulario (nombres propios, jerga) para acertar mejor.
+    `model`/`language`/`prompt` opcionales permiten reprocesar con otra elección.
+    `prompt` es vocabulario (nombres propios, jerga) para acertar mejor.
     """
     job = _get_or_404(session, job_id)
     if not can_transition(job.status, JobStatus.QUEUED):
@@ -227,7 +227,7 @@ async def start_transcription(
     job.status = JobStatus.QUEUED
     job.progress = 0.0
     job.error = None
-    job.position = _next_position(session)  # al final de la cola (R7)
+    job.position = _next_position(session)  # al final de la cola
     session.add(job)
     session.commit()
     session.refresh(job)
@@ -239,7 +239,7 @@ async def start_transcription(
 
 @router.post("/{job_id}/cancel", response_model=JobRead)
 async def cancel_job(job_id: str, session: Session = Depends(get_session)):
-    """Cancela en queued/normalizing/transcribing (R8)."""
+    """Cancela en queued/normalizing/transcribing."""
     job = _get_or_404(session, job_id)
     if job.status not in _CANCELABLE:
         raise HTTPException(
@@ -257,7 +257,7 @@ async def cancel_job(job_id: str, session: Session = Depends(get_session)):
             job_id, JobEvent(JobStatus.CANCELED.value, job.progress, done=True)
         )
     else:
-        # En curso: se lo pedimos al worker, que converge a canceled y limpia (R8).
+        # En curso: se lo pedimos al worker, que converge a canceled y limpia.
         queue.request_cancel(job_id)
 
     return _to_read(job)
@@ -269,7 +269,7 @@ async def move_job(
     direction: str = Query(...),
     session: Session = Depends(get_session),
 ):
-    """Reordena un trabajo `queued` en la cola (R7). direction = up | down."""
+    """Reordena un trabajo `queued` en la cola. direction = up | down."""
     if direction not in ("up", "down"):
         raise HTTPException(status_code=400, detail="direction debe ser 'up' o 'down'")
     job = _get_or_404(session, job_id)
@@ -295,7 +295,7 @@ async def move_job(
 
 @router.delete("/{job_id}", status_code=204)
 async def delete_job(job_id: str, session: Session = Depends(get_session)):
-    """Borrado real (R3): elimina el trabajo, sus segmentos y los archivos de disco.
+    """Borrado real: elimina el trabajo, sus segmentos y los archivos de disco.
 
     No borra el trabajo que el worker está procesando ahora; primero hay que
     cancelarlo (evita borrar archivos en uso).
@@ -308,7 +308,7 @@ async def delete_job(job_id: str, session: Session = Depends(get_session)):
 
     for seg in session.exec(select(Segment).where(Segment.job_id == job_id)).all():
         session.delete(seg)
-    # Sin papelera oculta (R3): fuera el original y el wav temporal.
+    # Sin papelera oculta: fuera el original y el wav temporal.
     for path in (Path(job.media_path), settings.data_dir / f"{job_id}.wav"):
         try:
             path.unlink(missing_ok=True)
@@ -321,7 +321,7 @@ async def delete_job(job_id: str, session: Session = Depends(get_session)):
 
 @router.get("/{job_id}/events")
 async def job_events(job_id: str, request: Request):
-    """SSE: progreso server→cliente en vivo (doc 06). El corazón de la UX."""
+    """SSE: progreso server→cliente en vivo. El corazón de la UX."""
     with next(get_session()) as session:
         job = session.get(Job, job_id)
         if job is None:
@@ -357,9 +357,9 @@ async def job_events(job_id: str, request: Request):
 
 @router.get("/{job_id}/media")
 async def get_media(job_id: str, session: Session = Depends(get_session)):
-    """Sirve el archivo original para el reproductor sincronizado (doc 09).
+    """Sirve el archivo original para el reproductor sincronizado.
 
-    Local-first (R1): el archivo nunca sale de la máquina; esto lo entrega al
+    Local-first: el archivo nunca sale de la máquina; esto lo entrega al
     navegador del propio usuario en localhost.
     """
     job = _get_or_404(session, job_id)
@@ -379,7 +379,7 @@ async def export_transcript(
     format: str = Query(default="srt"),
     session: Session = Depends(get_session),
 ):
-    """Exporta a srt | vtt | txt | md. Determinista (R12)."""
+    """Exporta a srt | vtt | txt | md. Determinista."""
     from lscrib.export import render
 
     job = _get_or_404(session, job_id)

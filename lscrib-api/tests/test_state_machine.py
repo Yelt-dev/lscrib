@@ -1,4 +1,4 @@
-"""Tests de la máquina de estados del Job (doc 07). Evita estados imposibles."""
+"""Tests de la máquina de estados del Job. Evita estados imposibles."""
 
 import pytest
 
@@ -35,7 +35,7 @@ def test_completed_is_terminal():
 
 @pytest.mark.parametrize("src", [S.QUEUED, S.NORMALIZING, S.TRANSCRIBING])
 def test_cancelable_states_reach_canceled(src):
-    """Cancelar permitido en queued/normalizing/transcribing (R8)."""
+    """Cancelar permitido en queued/normalizing/transcribing."""
     assert can_transition(src, S.CANCELED)
 
 

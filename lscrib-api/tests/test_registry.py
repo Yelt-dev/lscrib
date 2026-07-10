@@ -1,4 +1,4 @@
-"""Tests del catálogo de modelos (R5) y la detección de descarga (R2)."""
+"""Tests del catálogo de modelos y la detección de descarga."""
 
 from lscrib.models import registry
 from lscrib.models.registry import (
@@ -20,7 +20,7 @@ def test_catalog_covers_expected_models():
 
 
 def test_every_model_has_tradeoff_fields():
-    """R5: siempre peso, velocidad y calidad para una decisión informada."""
+    """Siempre peso, velocidad y calidad para una decisión informada."""
     for m in CATALOG:
         assert m.size_label and m.speed and m.quality
 

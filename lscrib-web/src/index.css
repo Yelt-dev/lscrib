@@ -6,11 +6,11 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ------------------------------------------------------------------ *
- * Tokens del design system (context/10_Design_System.md).
+ * Tokens del design system.
  * Nombres shadcn/ui + tokens de marca (brand/estado) encima.
  * ------------------------------------------------------------------ */
-/* Identidad "Tinta moderna" (doc 10, ajustada 2026-07-08): papel cálido +
-   tinta carbón como color principal + teal profundo como único acento.
+/* Identidad "Tinta moderna": papel cálido + tinta carbón como color principal
+   + teal profundo como único acento.
    Todos los pares texto/fondo verificados ≥ WCAG AA 4.5:1. */
 :root {
   --radius: 0.75rem; /* rounded-xl amable */
@@ -117,7 +117,7 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 
-  /* Tipografía: UI neutra; transcript serif (metáfora del escribano, doc 10). */
+  /* Tipografía: UI neutra; transcript serif (metáfora del escribano). */
   --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
     Roboto, sans-serif;
   --font-serif: 'Source Serif 4', 'Iowan Old Style', 'Palatino Linotype',
@@ -138,7 +138,7 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Accesibilidad: respeta la preferencia de movimiento reducido (doc 09/10). */
+  /* Accesibilidad: respeta la preferencia de movimiento reducido. */
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -151,7 +151,7 @@
   }
 }
 
-/* Micro-celebración discreta al completar (doc 10). Neutralizada por reduced-motion. */
+/* Micro-celebración discreta al completar. Neutralizada por reduced-motion. */
 @keyframes celebrate {
   0% { transform: scale(1); }
   40% { transform: scale(1.12); }

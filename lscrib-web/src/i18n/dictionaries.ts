@@ -1,5 +1,5 @@
-/** Diccionarios ES/EN. El microcopy sigue context/14_Microcopy.md (tono claro,
- *  humano, tranquilizador en privacidad y errores). */
+/** Diccionarios ES/EN. Microcopy de tono claro y humano, tranquilizador en
+ *  privacidad y errores. */
 
 export type Lang = 'es' | 'en'
 

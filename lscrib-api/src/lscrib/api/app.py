@@ -1,4 +1,4 @@
-"""Fábrica de la app FastAPI. Sirve la API + SSE de progreso (doc 06)."""
+"""Fábrica de la app FastAPI. Sirve la API + SSE de progreso."""
 
 from contextlib import asynccontextmanager
 
@@ -17,9 +17,9 @@ from lscrib.worker.queue import queue
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
-    # Un reinicio deja trabajos a medias: se marcan failed para no mentir (R14).
+    # Un reinicio deja trabajos a medias: se marcan failed para no mentir sobre su estado.
     recover_stuck_jobs()
-    queue.start()  # worker en proceso, un job a la vez (R7)
+    queue.start()  # worker en proceso: procesa un job a la vez
     try:
         yield
     finally:
@@ -45,7 +45,7 @@ def create_app() -> FastAPI:
     app.include_router(jobs_router)
     app.include_router(meta_router)
 
-    # En producción (un comando, R13) el backend sirve el build de React desde el
+    # En producción el backend sirve el build de React desde el
     # mismo origen. Se monta al final: /health y /api/* ya están registrados y
     # tienen prioridad; el resto cae al SPA. En dev static_dir=None y esto se salta.
     if settings.static_dir and settings.static_dir.is_dir():

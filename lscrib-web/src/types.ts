@@ -1,4 +1,4 @@
-/** Tipos espejo de los esquemas del backend (lscrib-api, doc 05/07/08). */
+/** Tipos espejo de los esquemas del backend (lscrib-api). */
 
 export type JobStatus =
   | 'uploaded'

@@ -1,8 +1,8 @@
 """Integración real del pipeline: ffmpeg + faster-whisper sobre un audio fixture.
 
-Es el test end-to-end del hito de Fase 1, sin stubs. Lento (carga el modelo `tiny`
-y transcribe ~3 s de audio) pero es la única prueba que ejerce el motor de verdad.
-Se salta si falta ffmpeg (R14: no rompe la suite en máquinas sin él).
+Es el test end-to-end, sin stubs. Lento (carga el modelo `tiny` y transcribe
+~3 s de audio) pero es la única prueba que ejerce el motor de verdad.
+Se salta si falta ffmpeg para no romper la suite en máquinas sin él.
 """
 
 import asyncio
@@ -54,14 +54,14 @@ def test_real_pipeline_produces_text(worker_env):
     assert job.status == JobStatus.COMPLETED, f"error: {job.error}"
     assert job.progress == 1.0
     assert job.duration_sec and job.duration_sec >= 2
-    assert job.language  # se detectó algún idioma (R10)
+    assert job.language  # se detectó algún idioma
 
     segments = worker_env.segments(job_id)
     assert segments, "el pipeline debe producir al menos un segmento"
     text = " ".join(s.text for s in segments).strip()
     assert text, "el transcript no debe estar vacío"
 
-    # timestamps por palabra presentes (R11) en al menos un segmento
+    # timestamps por palabra presentes en al menos un segmento
     assert any(s.words for s in segments)
 
     # el wav normalizado temporal se limpió; el fixture original sigue intacto

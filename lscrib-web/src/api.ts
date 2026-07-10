@@ -49,7 +49,7 @@ export const api = {
     return fetch(`/api/jobs/${id}`).then((r) => parse<JobDetail>(r))
   },
 
-  /** Sube el archivo → crea Job en `uploaded`. Devuelve {job, existing} (R9). */
+  /** Sube el archivo → crea Job en `uploaded`. `existing` indica si ya había un job con el mismo contenido (dedup por hash). */
   async createJob(
     file: File,
     model: string,

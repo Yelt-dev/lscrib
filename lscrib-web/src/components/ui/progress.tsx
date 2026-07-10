@@ -7,7 +7,7 @@ interface ProgressProps extends ComponentProps<'div'> {
   indeterminate?: boolean
 }
 
-/** Barra de progreso accesible (role=progressbar). El corazón visual de la espera (doc 09). */
+/** Barra de progreso accesible (role=progressbar). Soporta modo determinado e indeterminado. */
 export function Progress({
   value,
   indeterminate = false,

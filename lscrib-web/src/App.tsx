@@ -85,7 +85,7 @@ function App() {
       .catch(() => {})
   }, [])
 
-  // Solo hay un job activo a la vez (R7): App mantiene la única suscripción SSE.
+  // Solo hay un job activo a la vez: App mantiene la única suscripción SSE.
   const activeJob = jobs.find((j) => ACTIVE.has(j.status)) ?? null
 
   const onEvent = useCallback(
@@ -141,7 +141,7 @@ function App() {
   return (
     <div className="min-h-svh">
       <header className="sticky top-0 z-30 flex h-[70px] items-center justify-between border-b border-border bg-background/95 px-6 backdrop-blur">
-        {/* Wordmark caligráfico (doc 10). Dos versiones por tema: tinta sobre
+        {/* Wordmark caligráfico. Dos versiones por tema: tinta sobre
             papel en claro, tinta clara en oscuro. */}
         <h1 className="leading-none">
           <img

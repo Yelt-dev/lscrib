@@ -1,7 +1,7 @@
-"""Catálogo de modelos Whisper con su trade-off (R5: decisión informada).
+"""Catálogo de modelos Whisper con su trade-off, para una decisión informada.
 
 La UI muestra siempre peso, velocidad relativa y calidad esperada antes de
-descargar (R2: descarga explícita, se avisa el tamaño).
+descargar: la descarga es explícita y se avisa el tamaño.
 """
 
 import os
@@ -19,7 +19,7 @@ class ModelInfo(BaseModel):
 
 
 class ModelStatus(ModelInfo):
-    """ModelInfo + si ya está en caché local (✓) o se bajaría (R2)."""
+    """ModelInfo + si ya está en caché local (✓) o se bajaría."""
 
     downloaded: bool = False
 
@@ -33,14 +33,14 @@ CATALOG: list[ModelInfo] = [
               note="buen equilibrio por defecto"),
     ModelInfo(name="medium", size_label="~1.5 GB", speed="lenta", quality="muy buena"),
     ModelInfo(name="large-v3", size_label="~3 GB", speed="muy lenta", quality="máxima",
-              note="la mejor precisión; pide RAM y paciencia (R5)"),
+              note="la mejor precisión; pide RAM y paciencia"),
 ]
 
 CATALOG_BY_NAME = {m.name: m for m in CATALOG}
 
 # faster-whisper baja los pesos de estos repos de Hugging Face y los cachea en
 # `<hub>/models--<org>--faster-whisper-<name>`. Detectamos ambos (Systran es el
-# actual; guillaumekln, el histórico) para marcar "descargado ✓" (R2/R5).
+# actual; guillaumekln, el histórico) para marcar "descargado ✓".
 _HF_ORGS = ("Systran", "guillaumekln")
 
 
@@ -66,7 +66,7 @@ def is_downloaded(name: str) -> bool:
 
 
 def catalog_with_status() -> list[ModelStatus]:
-    """Catálogo enriquecido con el flag `downloaded` para la UI (R5)."""
+    """Catálogo enriquecido con el flag `downloaded` para la UI."""
     return [
         ModelStatus(**m.model_dump(), downloaded=is_downloaded(m.name)) for m in CATALOG
     ]

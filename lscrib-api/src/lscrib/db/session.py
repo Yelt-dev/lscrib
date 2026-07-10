@@ -37,8 +37,8 @@ def get_session() -> Iterator[Session]:
 def recover_stuck_jobs() -> None:
     """Al arrancar, cualquier job in-progress quedó huérfano tras un reinicio.
 
-    No hay worker que lo continúe, así que se marca `failed` con un mensaje claro
-    (R14). El usuario puede reintentar (failed → queued, doc 07).
+    No hay worker que lo continúe, así que se marca `failed` con un mensaje claro.
+    El usuario puede reintentar (failed → queued).
     """
     from sqlmodel import select
 

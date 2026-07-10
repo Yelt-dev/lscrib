@@ -2,7 +2,7 @@
 
 Un job puede tener varios suscriptores (varias pestañas abiertas). El worker
 llama `publish(job_id, evento)` en cada cambio; cada ruta SSE `subscribe()` y
-recibe los eventos por su propia cola (doc 06: progreso server→cliente).
+recibe los eventos por su propia cola (progreso server→cliente).
 """
 
 import asyncio

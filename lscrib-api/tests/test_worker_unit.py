@@ -74,7 +74,7 @@ def test_happy_path_completes_and_persists(worker_env, monkeypatch):
     job = worker_env.get(job_id)
     assert job.status == JobStatus.COMPLETED
     assert job.progress == 1.0
-    assert job.language == "es"  # idioma detectado (R10)
+    assert job.language == "es"  # idioma detectado
     assert job.completed_at is not None
 
     texts = [s.text for s in worker_env.segments(job_id)]
@@ -118,7 +118,7 @@ def test_cancel_midway_cleans_up(worker_env, monkeypatch):
             def gen():
                 for i in range(5):
                     if i == 1:
-                        q.request_cancel(gen.job_id)  # R8: cancelar en curso
+                        q.request_cancel(gen.job_id)  # cancelar en curso
                     yield TranscribedSegment(i, i * 1000, (i + 1) * 1000, f"s{i}")
 
             gen.job_id = fake_transcribe.job_id
@@ -153,7 +153,7 @@ def test_cancel_midway_cleans_up(worker_env, monkeypatch):
     assert job.error is None
     # se persistió solo el segmento previo a la cancelación
     assert len(worker_env.segments(job_id)) == 1
-    # temporales limpiados (R8)
+    # temporales limpiados
     assert not (worker_env.data_dir / f"{job_id}.wav").exists()
 
 
@@ -171,7 +171,7 @@ def test_failure_marks_failed_with_message(worker_env, monkeypatch):
     events = _run_job(worker_env, job_id)
 
     job = worker_env.get(job_id)
-    assert job.status == JobStatus.FAILED  # R14: degradar con claridad
+    assert job.status == JobStatus.FAILED  # degradar con claridad
     assert "ffmpeg reventó" in (job.error or "")
     assert events[-1].done is True
     assert not (worker_env.data_dir / f"{job_id}.wav").exists()

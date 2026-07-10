@@ -3,8 +3,8 @@ import { isTerminal, type JobEvent } from '@/types'
 
 /**
  * Se suscribe al SSE de progreso de un job (`/api/jobs/{id}/events`) mientras
- * está activo. Llama `onEvent` en cada actualización (worker/events.py).
- * Cierra la conexión al llegar a un estado terminal (doc 07).
+ * está activo. Llama `onEvent` en cada actualización y cierra la conexión al
+ * llegar a un estado terminal.
  */
 export function useJobEvents(
   jobId: string | null,

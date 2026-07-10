@@ -1,4 +1,4 @@
-"""Tablas SQLModel. Espejo del modelo conceptual (doc 05)."""
+"""Tablas SQLModel. Espejo del modelo conceptual."""
 
 from datetime import UTC, datetime
 from uuid import uuid4
@@ -19,20 +19,20 @@ def _utcnow() -> datetime:
 
 
 class Job(SQLModel, table=True):
-    """Un archivo subido + su transcripción. Entidad central (doc 05)."""
+    """Un archivo subido + su transcripción. Entidad central."""
 
     id: str = Field(default_factory=_uuid, primary_key=True)
     original_filename: str
-    file_hash: str = Field(index=True)          # SHA-256 → idempotencia (R9)
+    file_hash: str = Field(index=True)          # SHA-256 del archivo: idempotencia
     media_path: str                              # ruta del wav normalizado
     duration_sec: int | None = None
     media_type: MediaType
-    language: str | None = None                  # null hasta detectar (R10)
+    language: str | None = None                  # null hasta autodetectar
     model: str
     prompt: str | None = None                    # vocabulario/nombres propios (hotwords)
     status: JobStatus = JobStatus.UPLOADED
     progress: float = 0.0                        # 0.0–1.0 (barra en vivo)
-    position: int = Field(default=0, index=True)  # orden en la cola (reordenable, R7)
+    position: int = Field(default=0, index=True)  # orden en la cola (reordenable)
     error: str | None = None
     created_at: datetime = Field(default_factory=_utcnow)
     completed_at: datetime | None = None
@@ -49,7 +49,7 @@ class Segment(SQLModel, table=True):
     start_ms: int
     end_ms: int
     text: str                                    # editable por el usuario
-    # timestamps por palabra (R11) como JSON; evita una tabla Word enorme (doc 05)
+    # timestamps por palabra como JSON; evita una tabla Word enorme
     words: list | None = Field(default=None, sa_column=Column(JSON))
 
     job: Job | None = Relationship(back_populates="segments")
