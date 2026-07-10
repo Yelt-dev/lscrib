@@ -2,7 +2,7 @@
 
 from collections.abc import Iterator
 
-from sqlmodel import Session, SQLModel, create_engine
+from sqlmodel import Session, create_engine
 
 from lscrib.config import settings
 
@@ -15,11 +15,17 @@ engine = create_engine(
 
 
 def init_db() -> None:
-    """Crea las tablas si no existen. Llamado en el arranque de la app."""
+    """Aplica las migraciones pendientes. Llamado en el arranque de la app.
+
+    Antes usaba `create_all`, que no altera tablas ya existentes; ahora Alembic
+    lleva el esquema a `head` (crea la BD en instalaciones nuevas y migra las
+    viejas). Ver `lscrib.db.migrate`.
+    """
     import lscrib.db.models  # noqa: F401  (registra los modelos en metadata)
+    from lscrib.db.migrate import run_migrations
 
     settings.data_dir.mkdir(parents=True, exist_ok=True)
-    SQLModel.metadata.create_all(engine)
+    run_migrations()
 
 
 def get_session() -> Iterator[Session]:

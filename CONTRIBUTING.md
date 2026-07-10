@@ -44,7 +44,29 @@ Al **mergear ese PR**: se crea el **tag** + la **GitHub Release** y se construye
 la imagen Docker multi-arch en **GHCR** (`ghcr.io/<owner>/lscrib`). Ver
 [`.github/workflows/release.yml`](.github/workflows/release.yml).
 
-## 5. Desarrollo y CI
+## 5. Migraciones de base de datos
+
+El esquema (SQLite) lo versiona **Alembic**. La app aplica las migraciones pendientes
+sola al arrancar (`init_db` → `lscrib.db.migrate`), así que un usuario nunca corre
+comandos: al actualizar, su BD se migra sin perder datos.
+
+Si tocas un modelo en `lscrib/db/models.py`, genera la migración y revísala:
+
+```bash
+cd lscrib-api
+uv run alembic revision --autogenerate -m "describe el cambio"
+uv run alembic upgrade head   # opcional: aplícala en tu BD local
+```
+
+Reglas:
+- **Revisa siempre** el archivo generado en `src/lscrib/db/migrations/versions/`;
+  el autogenerate no es infalible (renombres, tipos, `server_default`).
+- SQLite no tiene `ALTER TABLE` completo: usa `batch_alter_table` (ya es el default
+  vía `render_as_batch`) para cambiar/eliminar columnas.
+- Un cambio de esquema = un commit con su migración incluida. No edites migraciones
+  ya publicadas; añade una nueva.
+
+## 6. Desarrollo y CI
 
 Para levantar el proyecto en local, ver el [README](README.md).
 
