@@ -6,6 +6,8 @@
       "package-name": "lscrib",
       "include-component-in-tag": false,
       "changelog-path": "CHANGELOG.md",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": false,
       "extra-files": [
         { "type": "json", "path": "lscrib-web/package.json", "jsonpath": "$.version" },
         "lscrib-api/pyproject.toml"
