@@ -1,14 +1,15 @@
-# lscrib — un solo comando: `docker compose up` (R13).
-# Levanta backend + frontend en un contenedor, todo local (R1).
+# lscrib — un solo comando: `docker compose up -d`.
+# Levanta backend + frontend en un contenedor, todo local.
 services:
   lscrib:
-    build: .
+    image: ghcr.io/yelt-dev/lscrib:latest
+    # build: .   # para compilar desde el código: descomenta y usa `up -d --build`
     container_name: lscrib
     ports:
       - "8000:8000"
     volumes:
       - lscrib-data:/data       # audios subidos + BD (nunca sale de tu máquina)
-      - lscrib-models:/models   # caché de modelos Whisper (se baja 1 vez, R2)
+      - lscrib-models:/models   # caché de modelos Whisper (se baja una vez)
     restart: unless-stopped
 
 volumes:
