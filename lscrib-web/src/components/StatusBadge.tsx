@@ -12,7 +12,7 @@ import { useI18n } from '@/i18n'
 import type { TKey } from '@/i18n/dictionaries'
 import type { JobStatus } from '@/types'
 
-// Estado → variante de color + ícono (a11y: nunca solo color, doc 09).
+// Estado → color + ícono; nunca solo color (accesibilidad).
 const MAP: Record<
   JobStatus,
   {

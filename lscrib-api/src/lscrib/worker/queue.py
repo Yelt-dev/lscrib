@@ -1,8 +1,8 @@
-"""Worker en proceso: procesa la cola secuencialmente (R7), emite progreso (SSE).
+"""Worker en proceso: procesa la cola secuencialmente, emite progreso (SSE).
 
-Sin Redis/Celery en el MVP: simplicidad de operación es la feature (doc 06).
+Sin Redis/Celery: la simplicidad de operación es una feature.
 El pipeline por trabajo es: normalizing (ffmpeg) → transcribing (whisper) →
-completed, persistiendo Segment y publicando progreso en cada paso (doc 07/08).
+completed, persistiendo Segment y publicando progreso en cada paso.
 """
 
 import asyncio
@@ -21,7 +21,7 @@ from lscrib.worker.events import JobEvent, broker
 
 
 class JobCanceled(Exception):
-    """El usuario canceló el trabajo en curso (R8)."""
+    """El usuario canceló el trabajo en curso."""
 
 
 def _next(iterator):
@@ -33,7 +33,7 @@ def _next(iterator):
 
 
 class JobQueue:
-    """Un único trabajo activo a la vez (R7). El orden lo da `Job.position` en la
+    """Un único trabajo activo a la vez. El orden lo da `Job.position` en la
     BD (reordenable), no una cola en memoria: el worker despierta por un evento y
     elige el siguiente `queued` con menor posición."""
 
@@ -53,7 +53,7 @@ class JobQueue:
         self._wakeup.set()
 
     def request_cancel(self, job_id: str) -> None:
-        """Marca un trabajo en curso para cancelar (R8). El worker converge."""
+        """Marca un trabajo en curso para cancelar. El worker converge."""
         self._cancel.add(job_id)
 
     @property
@@ -101,7 +101,7 @@ class JobQueue:
                 await self._process(job_id)
             except JobCanceled:
                 self._finish(job_id, JobStatus.CANCELED)
-            except Exception as exc:  # noqa: BLE001 — degradar con claridad (R14)
+            except Exception as exc:  # noqa: BLE001 — degradar con claridad
                 self._finish(job_id, JobStatus.FAILED, error=str(exc))
             finally:
                 self._cancel.discard(job_id)
@@ -114,7 +114,7 @@ class JobQueue:
     def _advance(
         self, session: Session, job: Job, new_status: JobStatus, progress: float
     ) -> None:
-        """Valida la transición (doc 07), persiste y publica el evento SSE."""
+        """Valida la transición, persiste y publica el evento SSE."""
         if not can_transition(job.status, new_status):
             raise RuntimeError(
                 f"transición inválida {job.status} → {new_status} (job {job.id})"
@@ -134,7 +134,7 @@ class JobQueue:
                 # Cancelado mientras esperaba turno, o ya procesado: nada que hacer.
                 return
 
-            # 1) Normalización (ffmpeg): cualquier formato → wav 16 kHz mono (R6).
+            # 1) Normalización (ffmpeg): cualquier formato → wav 16 kHz mono.
             self._advance(session, job, JobStatus.NORMALIZING, progress=0.0)
             src = Path(job.media_path)
             duration = await probe_duration(src)
@@ -152,7 +152,7 @@ class JobQueue:
                 transcribe, wav_path, job.model, forced, job.prompt
             )
             total = float(duration or tr.duration_sec or 0.0)
-            job.language = tr.language  # idioma detectado (R10)
+            job.language = tr.language  # idioma detectado
             session.add(job)
             session.commit()
             broker.publish(
@@ -203,7 +203,7 @@ class JobQueue:
     def _finish(
         self, job_id: str, status: JobStatus, error: str | None = None
     ) -> None:
-        """Marca un desenlace no-feliz (failed/canceled), limpia temporales (R8)."""
+        """Marca un desenlace no-feliz (failed/canceled), limpia temporales."""
         (settings.data_dir / f"{job_id}.wav").unlink(missing_ok=True)
         with Session(engine) as session:
             job = session.get(Job, job_id)

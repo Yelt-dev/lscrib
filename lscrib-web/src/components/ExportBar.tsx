@@ -12,7 +12,7 @@ export function ExportBar({ jobId }: { jobId: string }) {
       <span className="text-xs font-medium text-muted-foreground">{t('export.as')}</span>
       {FORMATS.map((f) => (
         <Button key={f} asChild variant="outline" size="sm">
-          {/* Descarga directa del backend (determinista, R12). */}
+          {/* Descarga directa desde el backend, que genera el formato al vuelo. */}
           <a href={api.exportUrl(jobId, f)} download>
             <Download className="size-3.5" />
             {f.toUpperCase()}

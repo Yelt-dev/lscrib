@@ -1,7 +1,7 @@
-"""Wrapper de ffmpeg: cualquier formato → wav 16 kHz mono (R6).
+"""Wrapper de ffmpeg: cualquier formato → wav 16 kHz mono.
 
 El usuario no debe preocuparse del formato. Si falta ffmpeg, mensaje claro de
-cómo instalarlo, no un stack trace (R14).
+cómo instalarlo, no un stack trace.
 """
 
 import asyncio
@@ -10,7 +10,7 @@ from pathlib import Path
 
 
 class FfmpegNotFound(RuntimeError):
-    """ffmpeg no está en el PATH. Mensaje amable para el usuario (R14)."""
+    """ffmpeg no está en el PATH. Mensaje amable para el usuario."""
 
     def __init__(self) -> None:
         super().__init__(
@@ -20,7 +20,7 @@ class FfmpegNotFound(RuntimeError):
 
 
 class FfmpegError(RuntimeError):
-    """ffmpeg/ffprobe corrió pero falló. Guarda stderr para diagnóstico (R14)."""
+    """ffmpeg/ffprobe corrió pero falló. Guarda stderr para diagnóstico."""
 
 
 def ensure_ffmpeg() -> str:
@@ -56,7 +56,7 @@ async def _run(program: str, *args: str) -> tuple[bytes, bytes]:
 async def normalize(src: Path, dst: Path) -> None:
     """Convierte `src` (cualquier formato) a wav 16 kHz mono en `dst`.
 
-    16 kHz mono PCM es lo que espera Whisper (doc 08). `-vn` descarta cualquier
+    16 kHz mono PCM es lo que espera Whisper. `-vn` descarta cualquier
     pista de video: de un mp4 solo nos interesa el audio.
     """
     ffmpeg = ensure_ffmpeg()

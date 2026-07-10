@@ -1,4 +1,4 @@
-"""Tests de borrado (R3) y reordenado de cola (R7) llamando a las rutas directo."""
+"""Tests de borrado y reordenado de cola llamando a las rutas directo."""
 
 import asyncio
 
@@ -21,7 +21,7 @@ def test_delete_removes_files_and_rows(worker_env):
     with Session(worker_env.engine) as s:
         asyncio.run(delete_job(job_id, session=s))
 
-    assert not media.exists()  # borrado real de disco (R3)
+    assert not media.exists()  # borrado real de disco
     assert not wav.exists()
     with Session(worker_env.engine) as s:
         assert s.get(Job, job_id) is None

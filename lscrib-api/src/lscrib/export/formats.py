@@ -1,8 +1,8 @@
-"""Exports deterministas: segments → SRT / VTT / TXT / MD (R12).
+"""Exports deterministas: segments → SRT / VTT / TXT / MD.
 
 Funciones puras y testeables sin correr Whisper. Deterministas: el mismo
 transcript da siempre el mismo archivo, sin marcas de tiempo de generación que
-ensucien diffs (R12).
+ensucien diffs.
 """
 
 from typing import Protocol

@@ -1,4 +1,4 @@
-"""Render de un transcript a formatos de texto/subtítulo (doc 08, R12)."""
+"""Render de un transcript a formatos de texto/subtítulo."""
 
 from lscrib.export.formats import FORMATS, SegmentLike, render
 

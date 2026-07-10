@@ -1,22 +1,20 @@
 # lscrib-web
 
-Frontend de **lscrib**: la cara de la app. Aquí *la UX es el producto* — el motor
-(Whisper) es commodity (ver `../context/01_Idea_y_Vision.md`).
+Frontend de **lscrib**: la cara de la app. Aquí la UX es el producto — el motor
+(Whisper) corre en el backend.
 
 ## Stack
-React + TypeScript + Vite + Tailwind v4. (shadcn/ui se añade en Fase 2.)
+React 19 · TypeScript · Vite · Tailwind v4 · shadcn/ui
 
 ## Desarrollo
 ```bash
 npm install
 npm run dev      # http://localhost:5173
+npm run build    # build de producción
 ```
-El dev server hace **proxy** de `/api` y `/health` al backend (`lscrib-api`,
-:8000), configurado en `vite.config.ts`. Levanta también `uv run lscrib` en
-`../lscrib-api` para ver el indicador "backend: conectado ✓".
+El dev server hace **proxy** de `/api` y `/health` al backend (`lscrib-api`, :8000),
+configurado en `vite.config.ts`. Levanta también `uv run lscrib` en `../lscrib-api`
+para tener el backend conectado.
 
-## Estado
-Scaffold de Fase 0: pantalla inicial con dropzone (placeholder), badge de
-privacidad "100% local" y health-check del backend. La dropzone funcional, el
-progreso en vivo (SSE), el editor de transcript y los exports llegan en la
-Fase 2 (`../context/11_Roadmap.md`).
+En producción, FastAPI sirve el build estático desde el mismo origen (un solo
+contenedor). Ver el [README raíz](../README.md).

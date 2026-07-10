@@ -1,4 +1,4 @@
-"""Enums y esquemas de dominio. Fuente de verdad de la máquina de estados (doc 07)."""
+"""Enums y esquemas de dominio. Fuente de verdad de la máquina de estados."""
 
 from enum import Enum
 
@@ -6,18 +6,18 @@ from pydantic import BaseModel
 
 
 class JobStatus(str, Enum):
-    """Estados del Job (doc 07_Maquina_de_Estados)."""
+    """Estados del Job en su máquina de estados."""
 
     UPLOADED = "uploaded"        # archivo recibido, hash calculado
-    QUEUED = "queued"            # esperando turno (R7: uno a la vez)
-    NORMALIZING = "normalizing"  # ffmpeg → wav 16 kHz mono (R6)
+    QUEUED = "queued"            # esperando turno (uno a la vez)
+    NORMALIZING = "normalizing"  # ffmpeg → wav 16 kHz mono
     TRANSCRIBING = "transcribing"  # faster-whisper trabajando
     COMPLETED = "completed"      # transcript listo
-    FAILED = "failed"            # error (R14)
-    CANCELED = "canceled"        # cancelado por el usuario (R8)
+    FAILED = "failed"            # error
+    CANCELED = "canceled"        # cancelado por el usuario
 
 
-# transiciones permitidas (doc 07). Se valida en el worker antes de mover estado.
+# transiciones permitidas. Se validan en el worker antes de mover estado.
 ALLOWED_TRANSITIONS: dict[JobStatus, set[JobStatus]] = {
     JobStatus.UPLOADED: {JobStatus.QUEUED},
     JobStatus.QUEUED: {JobStatus.NORMALIZING, JobStatus.CANCELED},
@@ -39,7 +39,7 @@ class MediaType(str, Enum):
 
 
 class WordTS(BaseModel):
-    """Timestamp por palabra (R11), guardado como JSON en Segment."""
+    """Timestamp por palabra, guardado como JSON en Segment."""
 
     w: str
     start_ms: int
@@ -65,11 +65,11 @@ class JobRead(BaseModel):
     prompt: str | None = None
     status: JobStatus
     progress: float = 0.0
-    position: int = 0            # orden en la cola (para reordenar visible, R7)
+    position: int = 0            # orden en la cola (para reordenar en la UI)
     error: str | None = None
 
 
 class JobDetail(JobRead):
-    """Job + sus segmentos (para la vista de transcript, doc 09)."""
+    """Job + sus segmentos (para la vista de transcript)."""
 
     segments: list[SegmentRead] = []

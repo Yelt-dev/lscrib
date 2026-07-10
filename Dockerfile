@@ -10,7 +10,7 @@ RUN npm run build
 
 # --- 2) Runtime del backend (FastAPI + faster-whisper) ----------------------
 FROM python:3.12-slim
-# ffmpeg es requisito de runtime (R6)
+# ffmpeg es requisito de runtime
 RUN apt-get update \
     && apt-get install -y --no-install-recommends ffmpeg \
     && rm -rf /var/lib/apt/lists/*

@@ -8,6 +8,8 @@ import { useJobEvents } from '@/hooks/useJobEvents'
 import { useI18n } from '@/i18n'
 import { api, ApiError } from '@/api'
 import type { Job, JobEvent, ModelStatus } from '@/types'
+import logoLight from '@/assets/logo-light.png'
+import logoDark from '@/assets/logo-dark.png'
 
 const ACTIVE = new Set(['queued', 'normalizing', 'transcribing'])
 const PAGE = 30
@@ -83,7 +85,7 @@ function App() {
       .catch(() => {})
   }, [])
 
-  // Solo hay un job activo a la vez (R7): App mantiene la única suscripción SSE.
+  // Solo hay un job activo a la vez: App mantiene la única suscripción SSE.
   const activeJob = jobs.find((j) => ACTIVE.has(j.status)) ?? null
 
   const onEvent = useCallback(
@@ -138,10 +140,23 @@ function App() {
 
   return (
     <div className="min-h-svh">
-      <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-border bg-background/95 px-6 backdrop-blur">
-        {/* Wordmark: Playwrite Indonesia (caligráfica) = la "tinta del escribano"
-            (doc 10). Auto-hospedada, local (R1). */}
-        <h1 className="select-none font-logo text-2xl leading-none">lscrib</h1>
+      <header className="sticky top-0 z-30 flex h-[70px] items-center justify-between border-b border-border bg-background/95 px-6 backdrop-blur">
+        {/* Wordmark caligráfico. Dos versiones por tema: tinta sobre
+            papel en claro, tinta clara en oscuro. */}
+        <h1 className="leading-none">
+          <img
+            src={logoLight}
+            alt="lscrib"
+            className="h-14 w-auto select-none dark:hidden"
+            draggable={false}
+          />
+          <img
+            src={logoDark}
+            alt="lscrib"
+            className="hidden h-14 w-auto select-none dark:block"
+            draggable={false}
+          />
+        </h1>
         <div className="flex items-center gap-1">
           <UiLangToggle />
           <ThemeToggle />

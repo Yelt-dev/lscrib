@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/select'
 import { useI18n } from '@/i18n'
 
-// Idiomas frecuentes (nombre nativo). 'auto' = autodetección (R10). Whisper
+// Idiomas frecuentes (nombre nativo). 'auto' = autodetección. Whisper
 // soporta ~99 idiomas; esta es una lista corta cómoda para la UI.
 const LANGS: { code: string; name: string }[] = [
   { code: 'es', name: 'Español' },

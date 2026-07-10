@@ -1,7 +1,7 @@
 """Transcripción con faster-whisper: wav → segmentos con timestamps.
 
 Corre en CPU y aprovecha Apple Silicon. El modelo se descarga bajo demanda la
-primera vez (R2) y queda en caché local.
+primera vez y queda en caché local.
 """
 
 from collections.abc import Iterator
@@ -11,7 +11,7 @@ from pathlib import Path
 from lscrib.config import settings
 
 # Cargar un WhisperModel es caro (lee pesos de disco). Se cachea por
-# (nombre, compute_type) para reusarlo entre trabajos secuenciales (R7).
+# (nombre, compute_type) para reusarlo entre trabajos secuenciales.
 _MODELS: dict[tuple[str, str], object] = {}
 
 
@@ -23,16 +23,16 @@ class TranscribedSegment:
     start_ms: int
     end_ms: int
     text: str
-    words: list[dict] | None = None  # [{w, start_ms, end_ms}] si el modelo los da (R11)
+    words: list[dict] | None = None  # [{w, start_ms, end_ms}] si el modelo los da
 
 
 @dataclass
 class Transcription:
     """Handle de una transcripción en curso.
 
-    `language` está disponible de inmediato (autodetección, R10); `segments` es
+    `language` está disponible de inmediato (autodetección); `segments` es
     perezoso: iterarlo dispara el cómputo real y permite reportar progreso en
-    vivo (doc 07: progress = end_actual / duración_total).
+    vivo (progress = end_actual / duración_total).
     """
 
     language: str
@@ -41,7 +41,7 @@ class Transcription:
 
 
 def _resolve_compute_type() -> str:
-    """`auto` → int8 (rápido y suficiente en CPU/Apple Silicon, doc 08)."""
+    """`auto` → int8 (rápido y suficiente en CPU/Apple Silicon)."""
     ct = settings.compute_type
     return "int8" if ct == "auto" else ct
 
@@ -52,7 +52,7 @@ def _get_model(name: str):
     key = (name, _resolve_compute_type())
     model = _MODELS.get(key)
     if model is None:
-        # device="auto": CUDA si hay, si no CPU (R14: degradar con claridad).
+        # device="auto": CUDA si hay, si no CPU (degrada con claridad).
         model = WhisperModel(name, device="auto", compute_type=key[1])
         _MODELS[key] = model
     return model
@@ -64,14 +64,14 @@ def transcribe(
     language: str | None = None,
     prompt: str | None = None,
 ) -> Transcription:
-    """Transcribe `audio_path`. `language=None` → autodetección (R10).
+    """Transcribe `audio_path`. `language=None` → autodetección.
 
     `prompt` (vocabulario: nombres propios, jerga) se pasa como `hotwords` para
     sesgar el reconocimiento hacia esos términos y mejorar la precisión.
 
     Devuelve un `Transcription` con el idioma detectado y un iterador perezoso
     de segmentos. La descarga del modelo ocurre dentro de `_get_model` la
-    primera vez (R2).
+    primera vez.
     """
     whisper_model = _get_model(model)
     segments, info = whisper_model.transcribe(

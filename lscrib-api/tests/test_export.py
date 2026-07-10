@@ -1,4 +1,4 @@
-"""Tests de los exports (R12: deterministas). No corren Whisper."""
+"""Tests de los exports: renderizado determinista. No corren Whisper."""
 
 from dataclasses import dataclass
 
@@ -64,7 +64,7 @@ def test_md_has_heading_and_stamps(segments):
 
 @pytest.mark.parametrize("fmt", list(FORMATS))
 def test_render_is_deterministic(fmt, segments):
-    """Mismo transcript → mismo archivo, siempre (R12)."""
+    """Mismo transcript → mismo archivo, siempre."""
     first, ext, media = render(fmt, segments)
     second, _, _ = render(fmt, segments)
     assert first == second

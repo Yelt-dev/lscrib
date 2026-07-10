@@ -24,7 +24,7 @@ const reducedMotion = () =>
 
 const scrollBehavior = (): ScrollBehavior => (reducedMotion() ? 'auto' : 'smooth')
 
-/** ¿Qué palabra suena ahora? (para el resaltado sincronizado, doc 09). */
+/** ¿Qué palabra suena ahora? (para el resaltado sincronizado con el audio). */
 function activeWordKey(seg: Segment, ms: number): number | null {
   if (!seg.words) return null
   for (let i = 0; i < seg.words.length; i++) {
@@ -50,7 +50,7 @@ export function TranscriptView({ job }: { job: Job }) {
   const segments = useMemo(() => detail?.segments ?? [], [detail])
 
   // Carga los segmentos; mientras el job está activo, refresca cada 1.5 s para
-  // el efecto de "transcript apareciendo en streaming" (doc 09).
+  // el efecto de "transcript apareciendo en streaming".
   useEffect(() => {
     let stop = false
     const load = () =>
@@ -118,7 +118,7 @@ export function TranscriptView({ job }: { job: Job }) {
     [matches, segments],
   )
 
-  // Auto-scroll: sigue el segmento que suena mientras se reproduce (doc 09).
+  // Auto-scroll: sigue el segmento que suena mientras se reproduce.
   useEffect(() => {
     if (!follow || !playing || activeSeg < 0) return
     segRefs.current
@@ -176,7 +176,7 @@ export function TranscriptView({ job }: { job: Job }) {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Cabecera pegajosa: reproductor + controles siempre a mano (doc 09). */}
+      {/* Cabecera pegajosa: reproductor + controles siempre a mano. */}
       <div className="sticky top-14 z-20 -mx-1 flex flex-col gap-3 bg-background/95 px-1 pb-3 pt-2 backdrop-blur">
         {hasMedia &&
           (isVideo ? (
