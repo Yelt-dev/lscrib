@@ -1,16 +1,6 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
-/* Wordmark del logo: Playwrite Indonesia (caligráfica). Auto-hospedada en el repo
-   → cero red en runtime, respeta local-first (R1). */
-@font-face {
-  font-family: 'Playwrite ID';
-  font-style: normal;
-  font-weight: 100 400;
-  font-display: swap;
-  src: url('./assets/fonts/PlaywriteID.woff2') format('woff2');
-}
-
 /* Dark mode por clase `.dark` en <html> (la fija el ThemeProvider según el
    sistema o la preferencia guardada). */
 @custom-variant dark (&:is(.dark *));
@@ -132,7 +122,6 @@
     Roboto, sans-serif;
   --font-serif: 'Source Serif 4', 'Iowan Old Style', 'Palatino Linotype',
     Georgia, 'Times New Roman', serif;
-  --font-logo: 'Playwrite ID', 'Segoe Script', 'Snell Roundhand', cursive;
 }
 
 @layer base {
