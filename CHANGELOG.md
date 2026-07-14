@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.0](https://github.com/Yelt-dev/lscrib/compare/v0.1.0...v0.2.0) (2026-07-14)
+
+
+### Features
+
+* **api:** detect CPUs without SSE4.2 instead of dying with SIGILL ([54c144b](https://github.com/Yelt-dev/lscrib/commit/54c144b63139b3520cd93d9796cb369df45e6b62))
+* detect unsupported CPUs, add upload feedback ([852251c](https://github.com/Yelt-dev/lscrib/commit/852251c717693b11b2a8e46446c5485b8a5cbe73))
+* **web:** show upload progress and warn on unsupported CPU ([8e3758c](https://github.com/Yelt-dev/lscrib/commit/8e3758ceb88be53bdfbd87b5112b5a4b4148d998))
+
+
+### Bug Fixes
+
+* **web:** only suggest installing ffmpeg when ffmpeg is missing ([48ad39c](https://github.com/Yelt-dev/lscrib/commit/48ad39c5cd68d6a085e161aa6be02d0f91854e5c))
+
 ## 0.1.0 (2026-07-10)
 
 
