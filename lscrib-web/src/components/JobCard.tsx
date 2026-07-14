@@ -93,8 +93,11 @@ export function JobCard({
     }
   }
 
-  const failedFfmpeg =
-    job.status === 'failed' && /ffmpeg/i.test(job.error ?? '')
+  // Solo cuando ffmpeg *falta* tiene sentido decirle al usuario que lo instale.
+  // Si ffmpeg está y falló decodificando ("ffmpeg falló: …"), mandarlo a instalar
+  // lo manda a perseguir el problema equivocado: ahí se muestra el error real.
+  const ffmpegMissing =
+    job.status === 'failed' && /ffmpeg (no encontrado|not found)/i.test(job.error ?? '')
 
   return (
     <Card
@@ -203,7 +206,9 @@ export function JobCard({
         <div className="mt-4 flex flex-col gap-2" onClick={(e) => e.stopPropagation()}>
           {job.status === 'failed' && (
             <p className="text-sm text-danger-fg">
-              {failedFfmpeg ? t('error.ffmpeg') : t('terminal.failed', { reason: job.error ?? '' })}
+              {ffmpegMissing
+                ? t('error.ffmpeg')
+                : t('terminal.failed', { reason: job.error ?? '' })}
             </p>
           )}
           <Button
