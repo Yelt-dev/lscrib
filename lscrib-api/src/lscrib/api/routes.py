@@ -34,6 +34,7 @@ from lscrib.domain.models import (
     can_transition,
 )
 from lscrib.models.registry import CATALOG_BY_NAME
+from lscrib.system.cpu import check_cpu
 from lscrib.worker.events import JobEvent, broker
 from lscrib.worker.queue import queue
 
@@ -208,6 +209,10 @@ async def start_transcription(
     `prompt` es vocabulario (nombres propios, jerga) para acertar mejor.
     """
     job = _get_or_404(session, job_id)
+    support = check_cpu()
+    if not support.supported:
+        # Encolar sería mentirle al usuario: el motor no puede arrancar aquí.
+        raise HTTPException(status_code=503, detail=support.message())
     if not can_transition(job.status, JobStatus.QUEUED):
         raise HTTPException(
             status_code=409,

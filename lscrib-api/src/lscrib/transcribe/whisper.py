@@ -9,6 +9,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from lscrib.config import settings
+from lscrib.system.cpu import ensure_cpu_supported
 
 # Cargar un WhisperModel es caro (lee pesos de disco). Se cachea por
 # (nombre, compute_type) para reusarlo entre trabajos secuenciales.
@@ -47,6 +48,10 @@ def _resolve_compute_type() -> str:
 
 
 def _get_model(name: str):
+    # Antes del import: `faster_whisper` arrastra NumPy, y en una CPU sin SSE4.2
+    # ese import mata el proceso con SIGILL. Aquí todavía podemos explicarlo.
+    ensure_cpu_supported()
+
     from faster_whisper import WhisperModel
 
     key = (name, _resolve_compute_type())
