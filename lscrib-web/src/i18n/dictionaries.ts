@@ -10,6 +10,9 @@ export const dictionaries = {
     'dropzone.hint': 'mp3, wav, m4a, mp4, mov…  ·  o haz clic para elegir',
     'dropzone.drop': 'Suéltalo para empezar',
 
+    'upload.uploading': 'Subiendo… {percent}%',
+    'upload.processing': 'Subida completa. Preparando el archivo en el servidor…',
+
     'model.label': 'Modelo',
     'model.help': 'Más grande = más preciso pero más lento.',
     'model.downloaded': 'descargado',
@@ -53,8 +56,19 @@ export const dictionaries = {
     'error.exists': 'Ya transcribiste este archivo. Lo abrimos.',
     'error.ffmpeg':
       'Falta ffmpeg. Instálalo: `brew install ffmpeg` (macOS) o `apt install ffmpeg` (Linux).',
+    'error.upload': 'Se cortó la conexión al subir el archivo. ¿Sigue lscrib en marcha?',
+
+    'cpu.title': 'Este equipo no puede ejecutar lscrib',
+    'cpu.body':
+      'El procesador de esta máquina ({model}) no tiene las instrucciones {missing}, que necesitan el motor de transcripción (faster-whisper) y NumPy. No es culpa de tu archivo: ningún audio se podrá transcribir aquí.',
+    'cpu.hint':
+      'Es una limitación del hardware, no hay ajuste que lo arregle. Instala lscrib en un equipo con un procesador de 2012 en adelante.',
+    'cpu.unknownModel': 'desconocido',
+    'cpu.banner': 'Transcripción deshabilitada: el procesador de este equipo no es compatible.',
+    'cpu.details': 'Ver detalles',
 
     'common.cancel': 'Cancelar',
+    'common.gotIt': 'Entendido',
     'dialog.download.title': 'Descargar el modelo «{model}»',
     'dialog.download.body':
       'Este modelo descarga {size} la primera vez. Se guarda en tu máquina y no se vuelve a bajar.',
@@ -93,6 +107,9 @@ export const dictionaries = {
     'dropzone.title': 'Drop an audio or video file',
     'dropzone.hint': 'mp3, wav, m4a, mp4, mov…  ·  or click to choose',
     'dropzone.drop': 'Drop it to start',
+
+    'upload.uploading': 'Uploading… {percent}%',
+    'upload.processing': 'Upload complete. Preparing the file on the server…',
 
     'model.label': 'Model',
     'model.help': 'Bigger is more accurate but slower.',
@@ -137,8 +154,19 @@ export const dictionaries = {
     'error.exists': 'You already transcribed this file. Opening it.',
     'error.ffmpeg':
       "ffmpeg isn't installed. Add it: `brew install ffmpeg` (macOS) or `apt install ffmpeg` (Linux).",
+    'error.upload': 'The connection dropped while uploading. Is lscrib still running?',
+
+    'cpu.title': 'This machine cannot run lscrib',
+    'cpu.body':
+      "This machine's processor ({model}) lacks the {missing} instructions that the transcription engine (faster-whisper) and NumPy require. It is not your file: no audio can be transcribed here.",
+    'cpu.hint':
+      'This is a hardware limit — no setting can work around it. Install lscrib on a machine with a 2012-or-newer processor.',
+    'cpu.unknownModel': 'unknown',
+    'cpu.banner': "Transcription disabled: this machine's processor isn't supported.",
+    'cpu.details': 'See details',
 
     'common.cancel': 'Cancel',
+    'common.gotIt': 'Got it',
     'dialog.download.title': 'Download the “{model}” model',
     'dialog.download.body':
       'This model needs a {size} download the first time. It is saved on your machine and never downloaded again.',

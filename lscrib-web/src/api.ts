@@ -1,6 +1,13 @@
 /** Cliente HTTP tipado del backend lscrib-api. `/api` va proxied a :8000 (vite). */
 
-import type { Job, JobDetail, JobPage, ModelsResponse, Segment } from './types'
+import type {
+  Job,
+  JobDetail,
+  JobPage,
+  ModelsResponse,
+  Segment,
+  SystemInfo,
+} from './types'
 
 export class ApiError extends Error {
   status: number
@@ -39,6 +46,10 @@ export const api = {
     return fetch('/api/models').then((r) => parse<ModelsResponse>(r))
   },
 
+  system(): Promise<SystemInfo> {
+    return fetch('/api/system').then((r) => parse<SystemInfo>(r))
+  },
+
   listJobs(limit = 30, offset = 0): Promise<JobPage> {
     return fetch(`/api/jobs?limit=${limit}&offset=${offset}`).then((r) =>
       parse<JobPage>(r),
@@ -49,19 +60,56 @@ export const api = {
     return fetch(`/api/jobs/${id}`).then((r) => parse<JobDetail>(r))
   },
 
-  /** Sube el archivo → crea Job en `uploaded`. `existing` indica si ya había un job con el mismo contenido (dedup por hash). */
-  async createJob(
+  /** Sube el archivo → crea Job en `uploaded`. `existing` indica si ya había un job con el mismo contenido (dedup por hash).
+   *
+   *  Usa XHR y no `fetch` porque `fetch` no reporta progreso de subida: con un
+   *  audio de cientos de MB el usuario necesita ver que algo está pasando.
+   *  `onProgress` recibe 0–1; llega a 1 cuando el archivo terminó de subir, y
+   *  el servidor todavía tarda un poco más en hashearlo y responder. */
+  createJob(
     file: File,
     model: string,
     language: string,
+    onProgress?: (fraction: number) => void,
   ): Promise<{ job: Job; existing: boolean }> {
     const form = new FormData()
     form.append('file', file)
     form.append('model', model)
     form.append('language', language)
-    const res = await fetch('/api/jobs', { method: 'POST', body: form })
-    const job = await parse<Job>(res)
-    return { job, existing: res.headers.get('X-Existing-Job') === 'true' }
+
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest()
+      xhr.open('POST', '/api/jobs')
+
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable) onProgress?.(e.loaded / e.total)
+      }
+
+      xhr.onload = () => {
+        let body: unknown = null
+        try {
+          body = JSON.parse(xhr.responseText)
+        } catch {
+          /* respuesta sin JSON */
+        }
+        if (xhr.status >= 200 && xhr.status < 300) {
+          resolve({
+            job: body as Job,
+            existing: xhr.getResponseHeader('X-Existing-Job') === 'true',
+          })
+          return
+        }
+        const detail = (body as { detail?: string } | null)?.detail ?? xhr.statusText
+        reject(new ApiError(xhr.status, detail))
+      }
+
+      // El backend puede morir a media subida (p. ej. lo mata el OOM killer):
+      // eso llega aquí, no como respuesta HTTP.
+      xhr.onerror = () => reject(new ApiError(0, 'network'))
+      xhr.onabort = () => reject(new ApiError(0, 'aborted'))
+
+      xhr.send(form)
+    })
   },
 
   transcribe(
