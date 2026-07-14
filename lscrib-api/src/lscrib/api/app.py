@@ -1,5 +1,6 @@
 """Fábrica de la app FastAPI. Sirve la API + SSE de progreso."""
 
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -11,11 +12,20 @@ from lscrib.api.meta import router as meta_router
 from lscrib.api.routes import router as jobs_router
 from lscrib.config import settings
 from lscrib.db.session import init_db, recover_stuck_jobs
+from lscrib.system.cpu import check_cpu
 from lscrib.worker.queue import queue
+
+log = logging.getLogger("lscrib")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Si la CPU no da, decirlo al arrancar: es la diferencia entre un aviso y un
+    # SIGILL mudo cuando el usuario ya subió su audio.
+    support = check_cpu()
+    if not support.supported:
+        log.warning("CPU no compatible: %s", support.message())
+
     init_db()
     # Un reinicio deja trabajos a medias: se marcan failed para no mentir sobre su estado.
     recover_stuck_jobs()

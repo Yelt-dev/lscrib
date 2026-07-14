@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { CpuUnsupportedDialog } from '@/components/CpuUnsupportedDialog'
 import { Dropzone } from '@/components/Dropzone'
 import { ThemeToggle, UiLangToggle } from '@/components/HeaderControls'
 import { JobCard } from '@/components/JobCard'
 import { JobsSidebar } from '@/components/JobsSidebar'
 import { TranscriptView } from '@/components/TranscriptView'
+import { UploadProgress } from '@/components/UploadProgress'
 import { useJobEvents } from '@/hooks/useJobEvents'
 import { useI18n } from '@/i18n'
 import { api, ApiError } from '@/api'
-import type { Job, JobEvent, ModelStatus } from '@/types'
+import type { CpuInfo, Job, JobEvent, ModelStatus } from '@/types'
 import logoLight from '@/assets/logo-light.png'
 import logoDark from '@/assets/logo-dark.png'
 
@@ -24,12 +26,26 @@ function App() {
   const [loadingMore, setLoadingMore] = useState(false)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
-  const [uploading, setUploading] = useState(false)
+  // Subida en curso: nombre del archivo + fracción 0–1 (null = no hay subida).
+  const [upload, setUpload] = useState<{ name: string; fraction: number } | null>(null)
+  const [cpu, setCpu] = useState<CpuInfo | null>(null)
+  const [cpuDialog, setCpuDialog] = useState(false)
   const [etaSec, setEtaSec] = useState(0)
   const rate = useRef<{ t0: number; p0: number } | null>(null)
 
+  // CPU incompatible: aquí no se puede transcribir nada, así que ni subir.
+  const cpuBlocked = cpu != null && !cpu.supported
+
   useEffect(() => {
     api.health().then(setHealth)
+    api
+      .system()
+      .then((r) => {
+        setCpu(r.cpu)
+        // Decírselo de entrada, no cuando ya haya subido un audio de 300 MB.
+        if (!r.cpu.supported) setCpuDialog(true)
+      })
+      .catch(() => {})
     api
       .models()
       .then((r) => {
@@ -115,10 +131,16 @@ function App() {
   useJobEvents(activeJob?.id ?? null, !!activeJob, onEvent)
 
   async function handleFile(file: File) {
-    setUploading(true)
+    if (cpuBlocked) {
+      setCpuDialog(true)
+      return
+    }
+    setUpload({ name: file.name, fraction: 0 })
     setNotice(null)
     try {
-      const { job, existing } = await api.createJob(file, defaultModel, 'auto')
+      const { job, existing } = await api.createJob(file, defaultModel, 'auto', (f) =>
+        setUpload({ name: file.name, fraction: f }),
+      )
       setJobs((prev) =>
         prev.some((j) => j.id === job.id)
           ? prev.map((j) => (j.id === job.id ? job : j))
@@ -128,9 +150,14 @@ function App() {
       setSelectedId(job.id)
       if (existing) setNotice(t('error.exists'))
     } catch (err) {
-      setNotice(err instanceof ApiError ? err.message : t('error.generic'))
+      // status 0 = la conexión se cortó (backend caído), no una respuesta HTTP.
+      if (err instanceof ApiError) {
+        setNotice(err.status === 0 ? t('error.upload') : err.message)
+      } else {
+        setNotice(t('error.generic'))
+      }
     } finally {
-      setUploading(false)
+      setUpload(null)
     }
   }
 
@@ -172,7 +199,25 @@ function App() {
               </div>
             )}
 
-            <Dropzone onFile={handleFile} disabled={uploading} />
+            {/* La CPU no cambia: el aviso se queda mientras dure la sesión. */}
+            {cpuBlocked && (
+              <div className="flex items-center justify-between gap-3 rounded-lg border border-danger/40 bg-danger/10 px-4 py-2 text-sm text-danger-fg">
+                <span>{t('cpu.banner')}</span>
+                <button
+                  type="button"
+                  onClick={() => setCpuDialog(true)}
+                  className="shrink-0 underline underline-offset-2 hover:no-underline"
+                >
+                  {t('cpu.details')}
+                </button>
+              </div>
+            )}
+
+            {upload ? (
+              <UploadProgress filename={upload.name} fraction={upload.fraction} />
+            ) : (
+              <Dropzone onFile={handleFile} disabled={cpuBlocked} />
+            )}
 
             {notice && (
               <div className="rounded-lg border border-warning/40 bg-warning/10 px-4 py-2 text-sm text-warning">
@@ -206,6 +251,10 @@ function App() {
           />
         </div>
       </main>
+
+      {cpu && !cpu.supported && (
+        <CpuUnsupportedDialog cpu={cpu} open={cpuDialog} onOpenChange={setCpuDialog} />
+      )}
     </div>
   )
 }

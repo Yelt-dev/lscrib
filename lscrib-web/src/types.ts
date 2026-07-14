@@ -63,6 +63,20 @@ export interface ModelsResponse {
   models: ModelStatus[]
 }
 
+/** Capacidades del anfitrión (GET /api/system). Si la CPU no soporta SSE4.2 el
+ *  motor no puede arrancar y la UI lo dice en vez de dejar subir un archivo. */
+export interface CpuInfo {
+  supported: boolean
+  cpu_model: string
+  missing: string[]
+  message: string
+}
+
+export interface SystemInfo {
+  version: string
+  cpu: CpuInfo
+}
+
 /** Evento SSE emitido por el worker (worker/events.py). */
 export interface JobEvent {
   status: JobStatus
